@@ -1,0 +1,13 @@
+{
+  "description": "长岛县优质海参，来自北纬39°，国家品牌注册商标产品。",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "wxef3a4e5c59a73dcd",
+  "projectname": "holothurian",
+  "miniprogramRoot": "./dist"
+}

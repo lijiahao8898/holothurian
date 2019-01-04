@@ -1,75 +1,133 @@
 <style lang="less">
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-}
+  @font-face {
+    font-family: 'iconfont';  /* project id 999110 */
+    src: url('//at.alicdn.com/t/font_999110_8800rmbj8pn.eot');
+    src: url('//at.alicdn.com/t/font_999110_8800rmbj8pn.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_999110_8800rmbj8pn.woff2') format('woff2'),
+    url('//at.alicdn.com/t/font_999110_8800rmbj8pn.woff') format('woff'),
+    url('//at.alicdn.com/t/font_999110_8800rmbj8pn.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_999110_8800rmbj8pn.svg#iconfont') format('svg');
+  }
+  .iconfont {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .icon-home:before {
+    content: "\e65c";
+  }
+
+  .icon-line:before {
+    content: "\e679";
+  }
+
+  .icon-mine_sel:before {
+    content: "\e619";
+  }
+  .container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
 </style>
 
 <script>
-import wepy from 'wepy'
-import 'wepy-async-function'
+  import wepy from 'wepy';
+  import 'wepy-async-function';
 
-import { setStore } from 'wepy-redux'
-import configStore from './store'
+  import {setStore} from 'wepy-redux';
+  import configStore from './store';
 
-const store = configStore()
-setStore(store)
+  const store = configStore();
+  setStore(store);
 
-export default class extends wepy.app {
-  config = {
-    pages: [
-      'pages/index'
-    ],
-    window: {
-      backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#ccc',
-      navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
+  export default class extends wepy.app {
+    config = {
+      pages: [
+        'pages/index',
+        'pages/list',
+        'pages/mine',
+        'pages/cart'
+      ],
+      window: {
+        backgroundTextStyle: 'light',
+        navigationBarBackgroundColor: '#ccc',
+        navigationBarTitleText: 'WeChat',
+        navigationBarTextStyle: 'black'
+      },
+      'tabBar': {
+        color: '#e6e6e6',
+        selectedColor: '#333',
+        backgroundColor: '#fff',
+        'list': [{
+          'pagePath': 'pages/index',
+          'text': '首页',
+          iconPath: 'images/home.png',
+          selectedIconPath: 'images/home_a.png'
+        }, {
+          'pagePath': 'pages/list',
+          'text': '列表',
+          iconPath: 'images/list.png',
+          selectedIconPath: 'images/list_a.png'
+        }, {
+          'pagePath': 'pages/cart',
+          'text': '购物车',
+          iconPath: 'images/cart.png',
+          selectedIconPath: 'images/cart_a.png'
+        }, {
+          'pagePath': 'pages/mine',
+          'text': '我的',
+          iconPath: 'images/mine.png',
+          selectedIconPath: 'images/mine_a.png'
+        }]
+      },
+    };
+
+    globalData = {
+      userInfo: null
+    };
+
+    constructor () {
+      super();
+      // this.use('promisify');
+      this.use('requestfix');
     }
-  }
 
-  globalData = {
-    userInfo: null
-  }
-
-  constructor () {
-    super()
-    this.use('requestfix');
-    this.use('promisify');
-  }
-
-  onLaunch() {
-    // this.testAsync()
-  }
-
-  sleep (s) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve('promise resolved')
-      }, s * 1000)
-    })
-  }
-
-//  async testAsync () {
-//    const data = await this.sleep(3)
-//    console.log(data)
-//  }
-
-  getUserInfo(cb) {
-    const that = this
-    if (this.globalData.userInfo) {
-      return this.globalData.userInfo
+    onLaunch () {
+      this.testAsync();
     }
-    wepy.getUserInfo({
-      success (res) {
-        that.globalData.userInfo = res.userInfo
-        cb && cb(res.userInfo)
+
+    sleep (s) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve('promise resolved');
+        }, s * 1000);
+      });
+    }
+
+    async testAsync () {
+      const data = await this.sleep(3);
+      console.log(data);
+    }
+
+    // 获取用户信息
+    getUserInfo (cb) {
+      const that = this;
+      if (this.globalData.userInfo) {
+        return this.globalData.userInfo;
       }
-    })
+      wepy.getUserInfo({
+        success (res) {
+          that.globalData.userInfo = res.userInfo;
+          cb && cb(res.userInfo);
+        }
+      });
+    }
   }
-}
 </script>

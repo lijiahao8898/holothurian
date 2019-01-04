@@ -1,0 +1,16 @@
+<template>
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class list extends wepy.page {
+    config = {
+      navigationBarTitleText: '商品列表'
+    };
+  }
+</script>
+
+<style>
+
+</style>

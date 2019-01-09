@@ -1,0 +1,119 @@
+<template>
+  <view class="goods">
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">120000000000000</view>
+      </view>
+    </view>
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">12000000000000</view>
+      </view>
+    </view>
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">1200000000000</view>
+      </view>
+    </view>
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">120000000</view>
+      </view>
+    </view>
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">120000000000000</view>
+      </view>
+    </view>
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">120000000000000</view>
+      </view>
+    </view>
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">120000000000000</view>
+      </view>
+    </view>
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">120000000000000</view>
+      </view>
+    </view>
+    <view class="goods-item">
+      <view class="goods-item__wrapper">
+        <view class="goods-img">
+          <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+        </view>
+        <view class="goods-name">商品名字商品名字商品名字商品名字</view>
+        <view class="goods-price">120000000000000</view>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+
+  export default class Goods extends wepy.component {
+
+  }
+</script>
+<style type="text/scss" lang="scss">
+  .goods{
+    &-item{
+      width: 50%;
+      display: inline-block;
+      color: #666;
+      margin: 20rpx 0;
+      &__wrapper{
+        width: 95%;
+        text-align: center;
+        margin: 0 auto;
+      }
+      .image{
+        width: 100%;
+        height: 200rpx;
+      }
+    }
+    &-name{
+      font-size: 24rpx;
+      text-align: left;
+    }
+    &-price{
+      font-size: 24rpx;
+      text-align: left;
+    }
+  }
+</style>

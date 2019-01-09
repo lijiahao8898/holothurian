@@ -1,13 +1,51 @@
 <template>
-
+  <view>
+    <scroll-view scroll-y bindscrolltoupper="upper" id="scrollView">
+      <goods></goods>
+    </scroll-view>
+  </view>
 </template>
 
 <script>
   import wepy from 'wepy';
+  import goods from '../components/goods';
   export default class list extends wepy.page {
     config = {
       navigationBarTitleText: '商品列表'
     };
+    data = {
+      height: '500px'
+    };
+    components = {
+      goods
+    };
+    onLoad () {
+      const self = this
+      wx.getSystemInfo({
+        success(res) {
+          console.log(res.model)
+          console.log(res.pixelRatio)
+          console.log(res.windowWidth)
+          console.log(res.windowHeight)
+          self.height = res.windowHeight;
+          console.log(res.language)
+          console.log(res.version)
+          console.log(res.platform)
+        },
+        fail(e) {
+          console.log(e);
+        }
+      })
+    }
+    onPullDownRefresh () {
+      wx.showNavigationBarLoading();
+      console.log(1111)
+    }
+    methods = {
+      upper (e) {
+        console.log(e);
+      }
+    }
   }
 </script>
 

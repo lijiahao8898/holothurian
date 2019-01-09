@@ -1,100 +1,223 @@
 <style lang="scss" type="text/scss">
-  .userinfo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .userinfo-avatar {
-    width: 80 rpx;
-    height: 80 rpx;
-    border-radius: 50%;
-  }
-
-  .userinfo-nickname {
-    color: #aaa;
-  }
-  .swiper{
-    height: 240px;
+  .swiper {
+    height: 375rpx;
     width: 100%;
-    image{
+    image {
       width: inherit;
+    }
+  }
+
+  .section {
+    width: 100%;
+    .icon {
+      &-item {
+        width: 20%;
+        display: inline-block;
+        text-align: center;
+        margin: 15rpx auto;
+        font-size: 20rpx;
+        line-height: 60rpx;
+        &__wrapper {
+          width: 60rpx;
+          height: 60rpx;
+          background: #ccc;
+          border-radius: 50%;
+          text-align: center;
+          margin: 0 auto;
+        }
+      }
+    }
+  }
+  .brand{
+    margin: 20rpx;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background: #ccc;
+    &-item{
+      width: 228rpx;
+      height: 100rpx;
+      padding: 10rpx 10rpx;
+      margin: 2rpx 2rpx 2rpx 0;
+      background: #fff;
+      display: inline-block;
+      image {
+        width: inherit;
+        height: inherit;
+      }
+    }
+  }
+
+  .introduce {
+    padding: 18rpx;
+    &-title{
+      text-align: center;
+      font-size: 28rpx;
+      font-weight: bold;
+    }
+    &-detail {
+      font-size: 24rpx;
+      padding: 18rpx;
+      color: #666;
     }
   }
 </style>
 <template>
   <view class="container">
+    <!-- 轮播图 start -->
     <swiper autoplay="true"
             class="swiper">
       <repeat for="{{imgList}}" key="item.id">
-      <swiper-item>
-            <image mode="aspectFill" src="{{item.url}}"/>
-      </swiper-item>
+        <swiper-item>
+          <image mode="aspectFill" src="{{item.url}}"/>
+        </swiper-item>
       </repeat>
     </swiper>
+    <!-- 轮播图 end -->
+
+    <!--<view class="section category">-->
+      <!--<view class="icon-item">-->
+        <!--<view class="icon-item__wrapper">-->
+          <!--<i class="iconfont icon-pinpai"></i>-->
+        <!--</view>-->
+        <!--<text>海参</text>-->
+      <!--</view>-->
+      <!--<view class="icon-item">-->
+        <!--<view class="icon-item__wrapper">-->
+          <!--<i class="iconfont icon-pinpai"></i>-->
+        <!--</view>-->
+        <!--<text>海参</text>-->
+      <!--</view>-->
+      <!--<view class="icon-item">-->
+        <!--<view class="icon-item__wrapper">-->
+          <!--<i class="iconfont icon-pinpai"></i>-->
+        <!--</view>-->
+        <!--<text>海参</text>-->
+      <!--</view>-->
+      <!--<view class="icon-item">-->
+        <!--<view class="icon-item__wrapper">-->
+          <!--<i class="iconfont icon-pinpai"></i>-->
+        <!--</view>-->
+        <!--<text>海参</text>-->
+      <!--</view>-->
+      <!--<view class="icon-item">-->
+        <!--<view class="icon-item__wrapper">-->
+          <!--<i class="iconfont icon-pinpai"></i>-->
+        <!--</view>-->
+        <!--<text>海参</text>-->
+      <!--</view>-->
+    <!--</view>-->
+    <!-- 品牌墙 start -->
+    <view class="section brand">
+      <view class="brand-item">
+        <image src="../images/img_blank.png"></image>
+      </view>
+      <view class="brand-item">
+        <image src="../images/img_blank.png"></image>
+      </view>
+      <view class="brand-item">
+        <image src="../images/img_blank.png"></image>
+      </view>
+      <view class="brand-item">
+        <image src="../images/img_blank.png"></image>
+      </view>
+      <view class="brand-item">
+        <image src="../images/img_blank.png"></image>
+      </view>
+      <view class="brand-item">
+        <image src="../images/img_blank.png"></image>
+      </view>
+    </view>
+    <!-- 品牌墙 end -->
+    <!-- 长图文介绍 start -->
+    <view class="section introduce">
+      <view class="introduce-article">
+        <view class="introduce-title">长图文介绍</view>
+        <view class="introduce-detail">长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍</view>
+      </view>
+      <view class="introduce-article">
+        <view class="introduce-title">长图文介绍</view>
+        <view class="introduce-detail">长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍</view>
+      </view>
+      <view class="introduce-article">
+        <view class="introduce-title">长图文介绍</view>
+        <view class="introduce-detail">长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍</view>
+      </view>
+      <view class="introduce-article">
+        <view class="introduce-title">长图文介绍</view>
+        <view class="introduce-detail">长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍</view>
+      </view>
+    </view>
+    <!-- 长图文介绍 end -->
+    <!-- 商品 start -->
+    <view class="section">
+      <goods></goods>
+    </view>
+    <!-- 商品 end -->
     <!--<button open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">获取用户信息</button>-->
     <!--<view class="userinfo" @tap="handleViewTap">-->
-      <!--<image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>-->
-      <!--<view class="userinfo-nickname">{{ userInfo.nickName }}</view>-->
+    <!--<image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>-->
+    <!--<view class="userinfo-nickname">{{ userInfo.nickName }}</view>-->
     <!--</view>-->
 
     <!--<panel>-->
-      <!--<view class="title" slot="title">测试数据绑定</view>-->
+    <!--<view class="title" slot="title">测试数据绑定</view>-->
 
-      <!--<text class="info">{{normalTitle}}</text>-->
-      <!--<text class="info">{{setTimeoutTitle}}</text>-->
-      <!--<text class="info">{{mixin}}</text>-->
-      <!--<text class="info">{{mynum}}</text>-->
-      <!--<text class="info">{{now}}</text>-->
-      <!--<text class="info">{{num}}</text>-->
-      <!--<text class="info">{{asyncNum}}</text>-->
-      <!--<text class="info">{{sumNum}}</text>-->
-      <!--<button @tap="plus('a')" size="mini"> +  </button>-->
+    <!--<text class="info">{{normalTitle}}</text>-->
+    <!--<text class="info">{{setTimeoutTitle}}</text>-->
+    <!--<text class="info">{{mixin}}</text>-->
+    <!--<text class="info">{{mynum}}</text>-->
+    <!--<text class="info">{{now}}</text>-->
+    <!--<text class="info">{{num}}</text>-->
+    <!--<text class="info">{{asyncNum}}</text>-->
+    <!--<text class="info">{{sumNum}}</text>-->
+    <!--<button @tap="plus('a')" size="mini"> +  </button>-->
     <!--</panel>-->
 
     <!--<panel>-->
-      <!--<view class="title" slot="title">其它测试</view>-->
-      <!--<button @tap="toast" size="mini">第三方组件</button>-->
-      <!--<button @tap="communicate" size="mini">组件通信</button>-->
-      <!--<button @tap="tap" size="mini">混合TAP事件</button>-->
+    <!--<view class="title" slot="title">其它测试</view>-->
+    <!--<button @tap="toast" size="mini">第三方组件</button>-->
+    <!--<button @tap="communicate" size="mini">组件通信</button>-->
+    <!--<button @tap="tap" size="mini">混合TAP事件</button>-->
     <!--</panel>-->
 
     <!--<panel>-->
-      <!--<view class="title" slot="title">测试并发网络请求</view>-->
-      <!--<view>返回结果:-->
-        <!--<text>{{netrst}}</text>-->
-      <!--</view>-->
-      <!--<button @tap="request" size="mini"> 点我发起10个请求 </button>-->
+    <!--<view class="title" slot="title">测试并发网络请求</view>-->
+    <!--<view>返回结果:-->
+    <!--<text>{{netrst}}</text>-->
+    <!--</view>-->
+    <!--<button @tap="request" size="mini"> 点我发起10个请求 </button>-->
     <!--</panel>-->
 
     <!--<panel>-->
-      <!--<view class="title" slot="title">测试组件</view>-->
+    <!--<view class="title" slot="title">测试组件</view>-->
 
-      <!--<text class="testcounter">计数组件1: </text>-->
-      <!--<view class="counterview">-->
-        <!--<counter1 @index-emit.user="counterEmit"/>-->
-      <!--</view>-->
+    <!--<text class="testcounter">计数组件1: </text>-->
+    <!--<view class="counterview">-->
+    <!--<counter1 @index-emit.user="counterEmit"/>-->
+    <!--</view>-->
 
-      <!--<text class="testcounter">计数组件2: </text>-->
+    <!--<text class="testcounter">计数组件2: </text>-->
 
-      <!--<view class="counterview">-->
-        <!--<counter2 :num.sync="mynum"></counter2>-->
-      <!--</view>-->
+    <!--<view class="counterview">-->
+    <!--<counter2 :num.sync="mynum"></counter2>-->
+    <!--</view>-->
     <!--</panel>-->
 
     <!--<panel>-->
-      <!--<view class="title" slot="title">测试组件Repeat</view>-->
-      <!--<repeat for="" index="index" item="item" key="key">-->
-        <!--<group :grouplist="item" :indexa="index"></group>-->
-      <!--</repeat>-->
+    <!--<view class="title" slot="title">测试组件Repeat</view>-->
+    <!--<repeat for="" index="index" item="item" key="key">-->
+    <!--<group :grouplist="item" :indexa="index"></group>-->
+    <!--</repeat>-->
     <!--</panel>-->
 
     <!--<panel>-->
-      <!--<view class="title" slot="title">测试列表</view>-->
-      <!--<list></list>-->
+    <!--<view class="title" slot="title">测试列表</view>-->
+    <!--<list></list>-->
     <!--</panel>-->
 
     <!--<toast/>-->
+    <vant-button  type="primary">1111</vant-button>
   </view>
 </template>
 
@@ -108,6 +231,7 @@
   import Group from '../components/group';
   import Toast from 'wepy-com-toast';
   import testMixin from '../mixins/test';
+  import goods from '../components/goods';
 
   console.log('moduleA ignored: ', moduleA); // => moduleA ignored: {}
 
@@ -125,7 +249,10 @@
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '首页'
+      navigationBarTitleText: '首页',
+      usingComponents: {
+        'vant-button': '../../components/vant-weapp/button/index'
+      }
     };
     components = {
       panel: Panel,
@@ -133,7 +260,8 @@
       counter2: Counter,
       list: List,
       group: Group,
-      toast: Toast
+      toast: Toast,
+      goods: goods
     };
 
     mixins = [testMixin];

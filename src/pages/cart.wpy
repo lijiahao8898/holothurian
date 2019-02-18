@@ -3,12 +3,13 @@
 </template>
 
 <script>
-  import wepy from 'wepy';
-  export default class cart extends wepy.page {
-    config = {
-      navigationBarTitleText: '购物车'
-    };
-  }
+    import wepy from 'wepy';
+
+    export default class cart extends wepy.page {
+        config = {
+            navigationBarTitleText: '购物车'
+        };
+    }
 </script>
 
 <style>

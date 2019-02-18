@@ -1,4 +1,5 @@
-<style lang="less">
+<style lang="scss">
+  @import './assets/custom';
   @font-face {
     font-family: 'iconfont';  /* project id 999110 */
     src: url('//at.alicdn.com/t/font_999110_vy92956x13l.eot');
@@ -8,6 +9,7 @@
     url('//at.alicdn.com/t/font_999110_vy92956x13l.ttf') format('truetype'),
     url('//at.alicdn.com/t/font_999110_vy92956x13l.svg#iconfont') format('svg');
   }
+
   .iconfont {
     font-family: "iconfont" !important;
     font-size: 16px;
@@ -35,6 +37,7 @@
   .icon-mine_sel:before {
     content: "\e619";
   }
+
   .container {
     height: 100%;
     display: flex;
@@ -58,7 +61,7 @@
   export default class extends wepy.app {
     config = {
       pages: [
-        'pages/index',
+        'pages/index/index',
         'pages/list',
         'pages/mine',
         'pages/cart'
@@ -70,28 +73,28 @@
         navigationBarTextStyle: 'black',
         enablePullDownRefresh: true,
       },
-      'tabBar': {
-        color: '#e6e6e6',
+      tabBar: {
+        color: '#c7cdce',
         selectedColor: '#333',
         backgroundColor: '#fff',
-        'list': [{
-          'pagePath': 'pages/index',
-          'text': '首页',
+        list: [{
+          pagePath: 'pages/index/index',
+          text: '首页',
           iconPath: 'images/home.png',
           selectedIconPath: 'images/home_a.png'
         }, {
-          'pagePath': 'pages/list',
-          'text': '列表',
+          pagePath: 'pages/list',
+          text: '列表',
           iconPath: 'images/list.png',
           selectedIconPath: 'images/list_a.png'
         }, {
-          'pagePath': 'pages/cart',
-          'text': '购物车',
+          pagePath: 'pages/cart',
+          text: '购物车',
           iconPath: 'images/cart.png',
           selectedIconPath: 'images/cart_a.png'
         }, {
-          'pagePath': 'pages/mine',
-          'text': '我的',
+          pagePath: 'pages/mine',
+          text: '我的',
           iconPath: 'images/mine.png',
           selectedIconPath: 'images/mine_a.png'
         }]

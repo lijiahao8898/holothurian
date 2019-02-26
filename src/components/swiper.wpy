@@ -1,0 +1,33 @@
+<template>
+    <swiper autoplay="true"
+            indicator-dots="true"
+            indicator-color="rgba(255, 255, 255, 0.5)"
+            indicator-active-color="rgba(255, 255, 255, 1)"
+            class="swiper">
+        <repeat for="{{imgList}}" key="item.id">
+            <swiper-item>
+                <image mode="aspectFill" src="{{item.url}}"/>
+            </swiper-item>
+        </repeat>
+    </swiper>
+</template>
+
+<script>
+    import wepy from 'wepy';
+
+    export default class swiperComepnent extends wepy.component {
+        props = {
+            imgList: Array
+        };
+    }
+</script>
+
+<style type="text/scss" lang="scss">
+    .swiper {
+        height: 375rpx;
+        width: 100%;
+        image {
+            width: inherit;
+        }
+    }
+</style>

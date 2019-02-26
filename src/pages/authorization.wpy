@@ -1,0 +1,59 @@
+<template>
+    <view class="authorization">
+        <view class="authorization-wrapper">
+            <view class="authorization-information">请提供以下授权，即可继续操作</view>
+            <view class="authorization-tip">获取你的公开信息（昵称、头像等）</view>
+            <button class="authorization-btn" type="primary" open-type="getUserInfo"
+                    lang="zh_CN"
+                    bindgetuserinfo="onGotUserInfo">确认授权
+            </button>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+
+    export default class Authorization extends wepy.page {
+        methods = {
+            onGotUserInfo (e) {
+                console.log(e.detail.errMsg);
+                console.log(e.detail.userInfo);
+                console.log(e.detail.rawData);
+            },
+        };
+    }
+</script>
+
+<style lang="scss" type="text/scss">
+    @import "../../src/assets/config";
+    page {
+        height: 100%;
+        background: #f2f8f9;
+    }
+
+    .authorization {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: Center;
+        &-wrapper {
+            width: 80%;
+            margin: 0 auto;
+        }
+        &-information {
+            font-size: 28rpx;
+            color: $font-dark-color;
+            margin: 20rpx 0;
+        }
+        &-tip {
+            font-size: 24rpx;
+            color: #9fb2b4;
+            margin: 0 0 80rpx 0;
+        }
+        &-btn {
+        }
+    }
+</style>
+

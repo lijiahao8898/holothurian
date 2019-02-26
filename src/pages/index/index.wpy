@@ -4,70 +4,21 @@
 <template>
     <view class="container">
         <!-- 轮播图 start -->
-        <swiper autoplay="true"
-                class="swiper">
-            <repeat for="{{imgList}}" key="item.id">
-                <swiper-item>
-                    <image mode="aspectFill" src="{{item.url}}"/>
-                </swiper-item>
-            </repeat>
-        </swiper>
+        <swiperComponent :imgList="imgList"></swiperComponent>
         <!-- 轮播图 end -->
 
-        <view class="section category">
-            <view class="icon-item">
-                <view class="icon-item__wrapper">
-                    <i class="iconfont icon-pinpai"></i>
-                </view>
-                <text>海参</text>
-            </view>
-            <view class="icon-item">
-                <view class="icon-item__wrapper">
-                    <i class="iconfont icon-pinpai"></i>
-                </view>
-                <text>海参</text>
-            </view>
-            <view class="icon-item">
-                <view class="icon-item__wrapper">
-                    <i class="iconfont icon-pinpai"></i>
-                </view>
-                <text>海参</text>
-            </view>
-            <view class="icon-item">
-                <view class="icon-item__wrapper">
-                    <i class="iconfont icon-pinpai"></i>
-                </view>
-                <text>海参</text>
-            </view>
-            <view class="icon-item">
-                <view class="icon-item__wrapper">
-                    <i class="iconfont icon-pinpai"></i>
-                </view>
-                <text>海参</text>
-            </view>
+        <!-- 类目 start -->
+        <view class="section">
+            <categoriesList></categoriesList>
         </view>
+        <!-- 类目 end -->
+
         <!-- 品牌墙 start -->
-        <view class="section brand">
-            <view class="brand-item">
-                <image src="../../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../../images/img_blank.png"></image>
-            </view>
+        <view class="section">
+            <brand></brand>
         </view>
         <!-- 品牌墙 end -->
+
         <!-- 长图文介绍 start -->
         <view class="section introduce">
             <view class="introduce-article">
@@ -96,6 +47,7 @@
             </view>
         </view>
         <!-- 长图文介绍 end -->
+
         <!-- 商品 start -->
         <view class="section">
             <goods></goods>
@@ -106,6 +58,7 @@
             <goods></goods>
         </view>
         <!-- 商品 end -->
+
         <!--<button open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">获取用户信息</button>-->
         <!--<view class="userinfo" @tap="handleViewTap">-->
         <!--<image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>-->
@@ -187,6 +140,9 @@
     import Toast from 'wepy-com-toast';
     import testMixin from '../../mixins/test';
     import goods from '../../components/goods';
+    import swiperComponent from '../../components/swiper';
+    import categoriesList from '../../components/categoriesList';
+    import brand from '../../components/brand';
 
     console.log('moduleA ignored: ', moduleA); // => moduleA ignored: {}
 
@@ -216,7 +172,10 @@
             list: List,
             group: Group,
             toast: Toast,
-            goods: goods
+            goods: goods,
+            swiperComponent: swiperComponent,
+            categoriesList: categoriesList,
+            brand
         };
 
         mixins = [testMixin];
@@ -292,16 +251,7 @@
             }
         };
 
-        onLoad () {
-            wepy.login({
-                success (res) {
-                    console.log(res);
-                },
-                fail (e) {
-                    console.log(e);
-                }
-            });
-        }
+        onLoad () {}
 
         methods = {
             plus () {

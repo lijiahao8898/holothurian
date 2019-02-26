@@ -1,0 +1,56 @@
+<template>
+    <view class="brand">
+        <view class="brand-wrapper">
+            <view class="brand-item">
+                <image src="../images/img_blank.png"></image>
+            </view>
+            <view class="brand-item">
+                <image src="../images/img_blank.png"></image>
+            </view>
+            <view class="brand-item">
+                <image src="../images/img_blank.png"></image>
+            </view>
+            <view class="brand-item">
+                <image src="../images/img_blank.png"></image>
+            </view>
+            <view class="brand-item">
+                <image src="../images/img_blank.png"></image>
+            </view>
+            <view class="brand-item">
+                <image src="../images/img_blank.png"></image>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy'
+
+    export default class Brand extends wepy.component {
+
+    }
+</script>
+
+<style type="text/scss" lang="scss">
+    .brand {
+        margin: 20rpx 0;
+        &-wrapper{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            background: #ccc;
+        }
+        &-item {
+            width: 228rpx;
+            height: 100rpx;
+            padding: 10rpx 10rpx;
+            margin: 2rpx 2rpx 2rpx 0;
+            background: #fff;
+            display: inline-block;
+            image {
+                width: inherit;
+                height: inherit;
+            }
+        }
+    }
+</style>

@@ -1,0 +1,65 @@
+<template>
+    <view class="category">
+        <view class="icon-item">
+            <view class="icon-item__wrapper">
+                <i class="iconfont icon-pinpai"></i>
+            </view>
+            <text>海参</text>
+        </view>
+        <view class="icon-item">
+            <view class="icon-item__wrapper">
+                <i class="iconfont icon-pinpai"></i>
+            </view>
+            <text>海参</text>
+        </view>
+        <view class="icon-item">
+            <view class="icon-item__wrapper">
+                <i class="iconfont icon-pinpai"></i>
+            </view>
+            <text>海参</text>
+        </view>
+        <view class="icon-item">
+            <view class="icon-item__wrapper">
+                <i class="iconfont icon-pinpai"></i>
+            </view>
+            <text>海参</text>
+        </view>
+        <view class="icon-item">
+            <view class="icon-item__wrapper">
+                <i class="iconfont icon-pinpai"></i>
+            </view>
+            <text>海参</text>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+
+    export default class Categories extends wepy.component {
+
+    }
+</script>
+
+<style type="text/scss" lang="scss">
+    .category{
+        .icon {
+            &-item {
+                width: 20%;
+                display: inline-block;
+                text-align: center;
+                margin: 15rpx auto;
+                font-size: 20rpx;
+                line-height: 60rpx;
+                &__wrapper {
+                    width: 60rpx;
+                    height: 60rpx;
+                    background: #ccc;
+                    border-radius: 50%;
+                    text-align: center;
+                    margin: 0 auto;
+                }
+            }
+        }
+    }
+</style>

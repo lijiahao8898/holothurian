@@ -1,11 +1,15 @@
 <template>
     <view class="authorization">
         <view class="authorization-wrapper">
-            <view class="authorization-information">请提供以下授权，即可继续操作</view>
+            <view class="authorization-image">
+                <image class="image" src="{{appLogo}}"/>
+                <view class="desc">{{appDesc}}</view>
+            </view>
+            <view class="authorization-information">该小程序由{{appName}}开发，请提供以下授权，即可继续操作</view>
             <view class="authorization-tip">获取你的公开信息（昵称、头像等）</view>
             <button class="authorization-btn" type="primary" open-type="getUserInfo"
                     lang="zh_CN"
-                    bindgetuserinfo="onGotUserInfo">确认授权
+                    bindgetuserinfo="onGetUserInfo">确认授权
             </button>
         </view>
     </view>
@@ -13,13 +17,56 @@
 
 <script>
     import wepy from 'wepy';
-
+    const moment = require('moment');
     export default class Authorization extends wepy.page {
+
+        data = {
+            appLogo: '',
+            appName: '',
+            appDesc: '',
+            code: ''
+        };
+
+        onLoad (options) {
+            console.log('-----------');
+            console.log(options);
+            console.log(this.$parent);
+            console.log('-----------');
+            const global = this.$parent.globalData;
+            this.appLogo = global.appLogo;
+            this.appName = global.appName;
+            this.appDesc = global.appDesc;
+            wepy.getStorage({
+                key: 'wepyCode'
+            }).then(res => {
+                this.code = res.data;
+            });
+        }
+
+        // 登录授权并跳转
+        getUserAuthorization (userInfo) {
+            console.log(userInfo);
+            wepy.request({
+                method: 'post',
+                url: `${this.$parent.globalData.baseUrl}user/login`,
+                data: {
+                    avatarUrl: encodeURIComponent(userInfo.avatarUrl),
+                    nickName: encodeURIComponent(userInfo.nickName),
+                    code: this.code,
+                }
+            }).then((d) => console.log(d));
+        }
+
         methods = {
-            onGotUserInfo (e) {
-                console.log(e.detail.errMsg);
-                console.log(e.detail.userInfo);
-                console.log(e.detail.rawData);
+            onGetUserInfo (e) {
+                const {userInfo} = e.detail;
+                this.$parent.globalData.userInfo = userInfo;
+                wepy.setStorage({
+                    key: 'userInfo',
+                    data: userInfo,
+                });
+                console.log(userInfo);
+                this.getUserAuthorization(userInfo);
             },
         };
     }
@@ -27,9 +74,10 @@
 
 <style lang="scss" type="text/scss">
     @import "../../src/assets/config";
+
     page {
         height: 100%;
-        background: #f2f8f9;
+        background: $page-bg;
     }
 
     .authorization {
@@ -37,22 +85,46 @@
         height: 100%;
         display: flex;
         justify-content: center;
-        align-items: Center;
+        align-items: center;
+
         &-wrapper {
             width: 80%;
             margin: 0 auto;
         }
+
+        &-image {
+            margin: 0 auto 100rpx auto;
+            text-align: center;
+
+            .image {
+                width: 200rpx;
+                height: 200rpx;
+                border-radius: 100%;
+            }
+
+            .desc {
+                width: 75%;
+                font-size: $font-size-small;
+                color: $font-dark-color;
+                text-align: left;
+                margin: 20rpx auto 0 auto;
+            }
+        }
+
         &-information {
-            font-size: 28rpx;
+            font-size: $font-size-base;
             color: $font-dark-color;
             margin: 20rpx 0;
         }
+
         &-tip {
-            font-size: 24rpx;
-            color: #9fb2b4;
-            margin: 0 0 80rpx 0;
+            font-size: $font-size-small;
+            color: $font-light-color;
+            margin: 0 0 60rpx 0;
         }
+
         &-btn {
+            background: $primary-color !important;
         }
     }
 </style>

@@ -62,11 +62,11 @@
     export default class extends wepy.app {
         config = {
             pages: [
-                'pages/authorization',
                 'pages/index/index',
                 'pages/list',
                 'pages/mine',
-                'pages/cart'
+                'pages/cart',
+                'pages/authorization'
             ],
             window: {
                 backgroundTextStyle: 'dark',
@@ -104,36 +104,40 @@
         };
 
         globalData = {
-            userInfo: null
+            userInfo: null,
+            appLogo: '../images/logo.jpeg',
+            appName: '健锋岛海参',
+            appDesc: '长岛县优质海参，来自北纬39°，国家品牌注册商标产品。',
+            baseUrl: 'https://wx.jf-trade.cn/'
         };
 
         constructor () {
             super();
-            // this.use('promisify');
+            this.use('promisify');
             this.use('requestfix');
+            this.intercept('request');
         }
 
         onLaunch () {
-            this.testAsync();
             this.login();
 
-            wepy.authorize({
-                scope: 'scope.userInfo',
-                success(res) {
-                    console.log(res);
-                }
-            });
-
-            wepy.getSetting({
-                success(res) {
-                    console.log('res.authSetting:' + res.authSetting)
-                    console.log(res.authSetting)
-                    // res.authSetting = {
-                    //   "scope.userInfo": true,
-                    //   "scope.userLocation": true
-                    // }
-                }
-            })
+//            wepy.authorize({
+//                scope: 'scope.userInfo',
+//                success(res) {
+//                    console.log(res);
+//                }
+//            });
+//
+//            wepy.getSetting({
+//                success(res) {
+//                    console.log('res.authSetting:' + res.authSetting)
+//                    console.log(res.authSetting)
+//                    // res.authSetting = {
+//                    //   "scope.userInfo": true,
+//                    //   "scope.userLocation": true
+//                    // }
+//                }
+//            })
         }
 
         sleep (s) {
@@ -144,35 +148,29 @@
             });
         }
 
-        async testAsync () {
-            const data = await this.sleep(3);
-            console.log(data);
-        }
-
         // 获取用户信息
         getUserInfo (cb) {
             const that = this;
             if (this.globalData.userInfo) {
                 return this.globalData.userInfo;
             }
-            wepy.getUserInfo({
-                success (res) {
-                    that.globalData.userInfo = res.userInfo;
-                    cb && cb(res.userInfo);
-                }
-            });
+            console.log('放屁')
+//            wepy.getUserInfo({
+//                success (res) {
+//                    that.globalData.userInfo = res.userInfo;
+//                    cb && cb(res.userInfo);
+//                }
+//            });
         }
 
-        // login
+        // 获取code
         login () {
-            console.log('login');
-            wepy.login({
-                success (res) {
-                    console.log(res.code);
-                    if(res.code) {
-                        // todo 发起请求
-                    }
-                }
+            wepy.login().then(res => {
+                console.log(res.code);
+                wepy.setStorage({
+                    key: 'wepyCode',
+                    data: res.code
+                });
             })
         }
     }

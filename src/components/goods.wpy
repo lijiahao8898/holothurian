@@ -3,7 +3,7 @@
         <view class="goods-item">
             <view class="goods-item__wrapper">
                 <view class="goods-img">
-                    <image class="image" mode="aspectFill" src="../images/1.jpg"/>
+                    <image class="image" mode="aspectFill" src="../images/2.jpg"/>
                 </view>
                 <view class="goods-price">
                     <view class="goods-price__discount">450</view>

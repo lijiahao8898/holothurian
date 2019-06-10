@@ -182,17 +182,12 @@
 
         data = {
             mynum: 20,
-            userInfo: {
-                nickName: '加载中...'
-            },
+            userInfo: '',
             normalTitle: '原始标题',
             setTimeoutTitle: '标题三秒后会被修改',
             count: 0,
             netrst: '',
             imgList: [{
-                id: '1',
-                url: '../../images/1.jpg'
-            }, {
                 id: '2',
                 url: '../../images/2.jpg'
             }, {
@@ -251,7 +246,19 @@
             }
         };
 
-        onLoad () {}
+        onLoad (options) {
+            const global = this.$parent.globalData;
+            const currentPage = getCurrentPages();
+            if (!global.userInfo) {
+                // 没有登录授权
+                wepy.navigateTo({url: `/pages/authorization?redirectUrl=111`});
+            }
+            this.getBrandList();
+        }
+
+        getBrandList () {
+            // wepy.request(`${this.$parent.globalData.baseUrl}brands`).then((d) => console.log(d));
+        }
 
         methods = {
             plus () {

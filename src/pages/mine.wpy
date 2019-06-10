@@ -11,20 +11,21 @@
         };
 
         onLoad () {
-            this.$parent.getUserInfo((userInfo) => {
-                if (userInfo) {
-                    this.userInfo = userInfo;
-                }
-                this.normalTitle = '标题已被修改1111';
-
-                this.setTimeoutTitle = '标题三秒后会被修改';
-                setTimeout(() => {
-                    this.setTimeoutTitle = '到三秒了';
-                    this.$apply();
-                }, 3000);
-
-                this.$apply();
-            });
+            console.log(1);
+//            this.$parent.getUserInfo((userInfo) => {
+//                if (userInfo) {
+//                    this.userInfo = userInfo;
+//                }
+//                this.normalTitle = '标题已被修改1111';
+//
+//                this.setTimeoutTitle = '标题三秒后会被修改';
+//                setTimeout(() => {
+//                    this.setTimeoutTitle = '到三秒了';
+//                    this.$apply();
+//                }, 3000);
+//
+//                this.$apply();
+//            });
         }
     }
 </script>

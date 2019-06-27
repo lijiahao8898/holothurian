@@ -1,0 +1,18 @@
+// 精度除法
+var accDiv = function (arg1, arg2) {
+    var t1 = 0, t2 = 0, r1, r2;
+    if(arg1.toString().split('.')[1]) {
+        t1 = arg1.toString().split('.')[1].length;
+    }
+    if(arg2.toString().split('.')[1]) {
+        t2 = arg2.toString().split('.')[1].length;
+    }
+
+    r1 = Number(arg1.toString().replace('.', ''));
+    r2 = Number(arg2.toString().replace('.', ''));
+    return (r1 / r2) * Math.pow(10, t2 - t1);
+};
+
+module.exports = {
+    accDiv: accDiv
+}

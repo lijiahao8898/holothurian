@@ -1,24 +1,33 @@
 <template>
-    <view class="goods">
-        <view class="goods-item">
-            <view class="goods-item__wrapper">
-                <view class="goods-img">
-                    <image class="image" mode="aspectFill" src="../images/2.jpg"/>
+    <repeat for="{{goodsList}}" key="item.id">
+        <view class="goods">
+            <view class="goods-item">
+                <view class="goods-item__wrapper">
+                    <view class="goods-img">
+                        <image class="image" mode="aspectFill" src="{{item.imgUrl}}"/>
+                    </view>
+                    <view class="goods-price">
+                        <view class="goods-price__discount">{{filter.accDiv(item.salePrice, 100)}}</view>
+                        <view class="goods-price__old">{{filter.accDiv(item.marketPrice, 100)}}</view>
+                    </view>
+                    <view class="goods-name">{{item.name}}</view>
                 </view>
-                <view class="goods-price">
-                    <view class="goods-price__discount">450</view>
-                    <view class="goods-price__old">1200</view>
-                </view>
-                <view class="goods-name">商品名字商品名字商品名字商品名字商品名字商品名字商品名字商品名字商品名字商品名字商品名字商品名字</view>
             </view>
         </view>
-    </view>
+    </repeat>
 </template>
 <script>
     import wepy from 'wepy';
+    import filter from '../utils/filter/index.wxs'
 
     export default class Goods extends wepy.component {
+        props = {
+            goodsList: Array
+        };
 
+        wxs = {
+            filter: filter
+        };
     }
 </script>
 <style type="text/scss" lang="scss">

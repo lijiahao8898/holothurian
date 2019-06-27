@@ -19,6 +19,7 @@
   "dependencies": {
     "miniprogram-datepicker": "^0.3.0",
     "moment": "^2.24.0",
+    "query-string": "^6.7.0",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
     "redux-promise": "^0.5.3",

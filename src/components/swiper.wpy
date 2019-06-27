@@ -6,7 +6,7 @@
             class="swiper">
         <repeat for="{{imgList}}" key="item.id">
             <swiper-item>
-                <image mode="aspectFill" src="{{item.url}}"/>
+                <image mode="aspectFill" src="{{item.imgUrl}}"/>
             </swiper-item>
         </repeat>
     </swiper>

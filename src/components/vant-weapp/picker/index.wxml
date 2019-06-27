@@ -3,12 +3,24 @@
     wx:if="{{ showToolbar }}"
     class="van-picker__toolbar van-hairline--top-bottom toolbar-class"
   >
-    <view class="van-picker__cancel" data-type="cancel" bindtap="emit">
-      {{ cancelButtonText || '取消' }}
+    <view
+      class="van-picker__cancel"
+      hover-class="van-picker__cancel--hover"
+      hover-stay-time="70"
+      data-type="cancel"
+      bindtap="emit"
+    >
+      {{ cancelButtonText }}
     </view>
     <view wx:if="{{ title }}" class="van-picker__title van-ellipsis">{{ title }}</view>
-    <view class="van-picker__confirm" data-type="confirm" bindtap="emit">
-      {{ confirmButtonText || '确认' }}
+    <view
+      class="van-picker__confirm"
+      hover-class="van-picker__confirm--hover"
+      hover-stay-time="70"
+      data-type="confirm"
+      bindtap="emit"
+    >
+      {{ confirmButtonText }}
     </view>
   </view>
   <view wx:if="{{ loading }}" class="van-picker__loading">
@@ -27,7 +39,7 @@
       custom-class="column-class"
       value-key="{{ valueKey }}"
       initial-options="{{ isSimple(columns) ? item : item.values }}"
-      default-index="{{ item.defaultIndex }}"
+      default-index="{{ item.defaultIndex || defaultIndex }}"
       item-height="{{ itemHeight }}"
       visible-item-count="{{ visibleItemCount }}"
       active-class="active-class"

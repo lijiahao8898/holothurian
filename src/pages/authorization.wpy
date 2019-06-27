@@ -17,7 +17,10 @@
 
 <script>
     import wepy from 'wepy';
+    import API from '@/utils/http/api'
+    let api = new API();
     const moment = require('moment');
+
     export default class Authorization extends wepy.page {
 
         data = {
@@ -44,17 +47,19 @@
         }
 
         // 登录授权并跳转
-        getUserAuthorization (userInfo) {
-            console.log(userInfo);
-            wepy.request({
-                method: 'post',
-                url: `${this.$parent.globalData.baseUrl}user/login`,
-                data: {
-                    avatarUrl: encodeURIComponent(userInfo.avatarUrl),
-                    nickName: encodeURIComponent(userInfo.nickName),
-                    code: this.code,
-                }
-            }).then((d) => console.log(d));
+        async getUserAuthorization (userInfo) {
+            const data = await api.authorization({
+                avatarUrl: userInfo.avatarUrl,
+                nickName: userInfo.nickName,
+                code: this.code,
+            });
+            if(data.code === 200) {
+                wepy.setStorage({
+                    key: 'token',
+                    data: data.data,
+                });
+                wepy.switchTab({url: `/pages/index/index`});
+            }
         }
 
         methods = {
@@ -65,7 +70,6 @@
                     key: 'userInfo',
                     data: userInfo,
                 });
-                console.log(userInfo);
                 this.getUserAuthorization(userInfo);
             },
         };

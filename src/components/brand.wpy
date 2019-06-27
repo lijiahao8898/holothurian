@@ -1,24 +1,11 @@
 <template>
     <view class="brand">
         <view class="brand-wrapper">
-            <view class="brand-item">
-                <image src="../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../images/img_blank.png"></image>
-            </view>
-            <view class="brand-item">
-                <image src="../images/img_blank.png"></image>
-            </view>
+            <repeat for="{{brandList}}" key="item.id">
+                    <view class="brand-item">
+                        <image lazy-load src="{{item.logoUrl}}" alt="{{item.name}}" mode="aspectFill" ></image>
+                    </view>
+            </repeat>
         </view>
     </view>
 </template>
@@ -27,23 +14,25 @@
     import wepy from 'wepy'
 
     export default class Brand extends wepy.component {
-
+        props = {
+            brandList: Array
+        };
     }
 </script>
 
 <style type="text/scss" lang="scss">
     .brand {
-        margin: 20rpx 0;
+        padding: 15rpx 0;
+        background: #ddd;
         &-wrapper{
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            background: #ccc;
         }
         &-item {
-            width: 228rpx;
+            width: 240rpx;
             height: 100rpx;
-            padding: 10rpx 10rpx;
+            padding: 5rpx 5rpx;
             margin: 2rpx 2rpx 2rpx 0;
             background: #fff;
             display: inline-block;

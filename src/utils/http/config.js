@@ -1,5 +1,5 @@
 const config = {
-  baseUrl: 'https://transaction-h5-dev.showcode.info/api/'
-}
+    baseUrl: 'https://wx.jf-trade.cn/'
+};
 
 export default config;

@@ -107,15 +107,44 @@
             userInfo: null,
             appLogo: '../images/logo.jpeg',
             appName: '健锋岛海参',
-            appDesc: '长岛县优质海参，来自北纬39°，国家品牌注册商标产品。',
-            baseUrl: 'https://wx.jf-trade.cn/'
+            appDesc: '长岛县优质海参，来自北纬39°，国家品牌注册商标产品。'
         };
 
         constructor () {
             super();
             this.use('promisify');
             this.use('requestfix');
-            this.intercept('request');
+            // 拦截器
+            this.intercept('request', {
+                config (p) {
+                    const token = wepy.getStorageSync('token');
+                    if(!p.header) {
+                        p.header = {}
+                    }
+                    token && (p.header['token'] = token);
+                    return p
+                },
+                success (p) {
+                    // 可以在这里对收到的响应数据对象进行加工处理
+                    console.log('request success: ', p);
+                    // 必须返回响应数据对象，否则后续无法对响应数据进行处理
+                    const code = p.statusCode;
+                    switch (code) {
+                        case 401:
+                            wepy.navigateTo({url: `/pages/authorization?redirectUrl=`});
+                            break;
+                        default:
+                            break;
+                    }
+                    return p;
+                },
+                fail (p) {
+                    console.log('request fail: ', p);
+                    // 必须返回响应数据对象，否则后续无法对响应数据进行处理
+                    return p;
+                },
+
+            });
         }
 
         onLaunch () {

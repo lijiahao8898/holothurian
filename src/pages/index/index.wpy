@@ -4,58 +4,38 @@
 <template>
     <view class="container">
         <!-- 轮播图 start -->
-        <swiperComponent :imgList="imgList"></swiperComponent>
+        <swiperComponent :imgList.sync="imgList"></swiperComponent>
         <!-- 轮播图 end -->
 
         <!-- 类目 start -->
-        <view class="section">
+        <!-- <view class="section">
             <categoriesList></categoriesList>
-        </view>
+        </view> -->
         <!-- 类目 end -->
 
         <!-- 品牌墙 start -->
         <view class="section">
-            <brand></brand>
+            <brand :brandList.sync="brandList"></brand>
         </view>
         <!-- 品牌墙 end -->
 
         <!-- 长图文介绍 start -->
         <view class="section introduce">
-            <view class="introduce-article">
-                <view class="introduce-title">长图文介绍</view>
-                <view class="introduce-detail">
-                    长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍
+            <repeat for="{{articleList}}" key="item.id">
+                <view class="introduce-article">
+                    <view class="introduce-title">长图文介绍</view>
+                    <view class="introduce-detail">
+                        长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍
+                    </view>
+                    <image mode="aspectFill" src="{{item}}"/>
                 </view>
-            </view>
-            <view class="introduce-article">
-                <view class="introduce-title">长图文介绍</view>
-                <view class="introduce-detail">
-                    长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍
-                </view>
-            </view>
-            <view class="introduce-article">
-                <view class="introduce-title">长图文介绍</view>
-                <view class="introduce-detail">
-                    长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍
-                </view>
-            </view>
-            <view class="introduce-article">
-                <view class="introduce-title">长图文介绍</view>
-                <view class="introduce-detail">
-                    长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍
-                </view>
-            </view>
+            </repeat>
         </view>
         <!-- 长图文介绍 end -->
 
         <!-- 商品 start -->
         <view class="section">
-            <goods></goods>
-            <goods></goods>
-            <goods></goods>
-            <goods></goods>
-            <goods></goods>
-            <goods></goods>
+            <goods :goodsList.sync="goodsList"></goods>
         </view>
         <!-- 商品 end -->
 
@@ -143,6 +123,8 @@
     import swiperComponent from '../../components/swiper';
     import categoriesList from '../../components/categoriesList';
     import brand from '../../components/brand';
+    import API from '@/utils/http/api'
+    let api = new API();
 
     console.log('moduleA ignored: ', moduleA); // => moduleA ignored: {}
 
@@ -165,6 +147,7 @@
                 'vant-button': '../../components/vant-weapp/button/index'
             }
         };
+
         components = {
             panel: Panel,
             counter1: Counter,
@@ -237,7 +220,10 @@
                         }
                     ]
                 }
-            ]
+            ],
+            goodsList: [],
+            brandList: [],
+            articleList: [],
         };
 
         computed = {
@@ -247,17 +233,38 @@
         };
 
         onLoad (options) {
-            const global = this.$parent.globalData;
-            const currentPage = getCurrentPages();
-            if (!global.userInfo) {
+            const userInfo = wepy.getStorageSync('userInfo');
+            if (!userInfo) {
                 // 没有登录授权
-                wepy.navigateTo({url: `/pages/authorization?redirectUrl=111`});
+                wepy.navigateTo({url: `/pages/authorization?redirectUrl=`});
+            } else {
+                // this.getGoodsList();
+                this.getIndexInformation();
             }
-            this.getBrandList();
         }
 
-        getBrandList () {
-            // wepy.request(`${this.$parent.globalData.baseUrl}brands`).then((d) => console.log(d));
+        // // 获取商品列表
+        // async getGoodsList () {
+        //     const data = await api.getGoodsList({
+        //         pageNum: 1,
+        //         pageSize: 20,
+        //     });
+        //     if(data.code === 200) {
+        //         data.data.rows.forEach(item => {
+        //             this.goodsList.push(item);
+        //         });
+        //     }
+        // }
+
+        async getIndexInformation () {
+            const data = await api.getIndexInformation();
+            if(data.code === 200) {
+                this.brandList = [...data.data.brandDTOList];
+                this.goodsList = [...data.data.itemDTOList];
+                this.imgList = [...data.data.carouselDTOList];
+                this.articleList = [...data.data.indexImgList];
+                this.$apply();
+            }
         }
 
         methods = {

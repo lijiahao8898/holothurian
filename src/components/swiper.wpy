@@ -3,12 +3,25 @@
             indicator-dots="true"
             indicator-color="rgba(255, 255, 255, 0.5)"
             indicator-active-color="rgba(255, 255, 255, 1)"
-            class="swiper">
-        <repeat for="{{imgList}}" key="item.id">
-            <swiper-item>
-                <image lazy-load mode="aspectFill" src="{{item.imgUrl}}" alt=""/>
-            </swiper-item>
-        </repeat>
+            class="{{type === 1 ? 'swiper' : 'goods-detail-swiper'}}">
+
+        <!-- 首页轮播 -->
+        <view wx:if="{{type === 1}}">
+            <repeat for="{{imgList}}" key="index" index="index" item="item">
+                <swiper-item>
+                    <image lazy-load mode="aspectFill" src="{{item.imgUrl}}" alt=""/>
+                </swiper-item>
+            </repeat>
+        </view>
+
+        <!-- 商品详情轮播 -->
+        <view wx:else>
+            <repeat for="{{imgList}}" key="index" index="index" item="item">
+                <swiper-item>
+                    <image lazy-load mode="aspectFill" src="{{item}}" alt=""/>
+                </swiper-item>
+            </repeat>
+        </view>
     </swiper>
 </template>
 
@@ -17,8 +30,14 @@
 
     export default class swiperComepnent extends wepy.component {
         props = {
-            imgList: Array
+            imgList: Array,
+            type: Number
         };
+
+        onShow () {
+            console.log('---------------');
+            console.log(this.type)
+        }
     }
 </script>
 
@@ -28,6 +47,16 @@
         width: 100%;
         image {
             width: inherit;
+            height: inherit;
+        }
+    }
+
+    .goods-detail-swiper {
+        height: 600rpx;
+        width: 100%;
+        image {
+            width: inherit;
+            height: inherit;
         }
     }
 </style>

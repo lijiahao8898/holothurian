@@ -1,54 +1,3 @@
-<style lang="scss">
-    @import './assets/custom';
-
-    @font-face {
-        font-family: 'iconfont';  /* project id 999110 */
-        src: url('//at.alicdn.com/t/font_999110_vy92956x13l.eot');
-        src: url('//at.alicdn.com/t/font_999110_vy92956x13l.eot?#iefix') format('embedded-opentype'),
-        url('//at.alicdn.com/t/font_999110_vy92956x13l.woff2') format('woff2'),
-        url('//at.alicdn.com/t/font_999110_vy92956x13l.woff') format('woff'),
-        url('//at.alicdn.com/t/font_999110_vy92956x13l.ttf') format('truetype'),
-        url('//at.alicdn.com/t/font_999110_vy92956x13l.svg#iconfont') format('svg');
-    }
-
-    .iconfont {
-        font-family: "iconfont" !important;
-        font-size: 16px;
-        font-style: normal;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-
-    .icon-home:before {
-        content: "\e65c";
-    }
-
-    .icon-line:before {
-        content: "\e679";
-    }
-
-    .icon-pinpai:before {
-        content: "\e664";
-    }
-
-    .icon-qicheqianlian-:before {
-        content: "\e618";
-    }
-
-    .icon-mine_sel:before {
-        content: "\e619";
-    }
-
-    .container {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        box-sizing: border-box;
-    }
-</style>
-
 <script>
     import wepy from 'wepy';
     import 'wepy-async-function';
@@ -62,22 +11,24 @@
     export default class extends wepy.app {
         config = {
             pages: [
-                'pages/index/index',
                 'pages/list',
+                'pages/index/index',
                 'pages/mine',
                 'pages/cart',
-                'pages/authorization'
+                'pages/authorization',
+                'pages/goodsDetail'
             ],
             window: {
-                backgroundTextStyle: 'dark',
-                navigationBarBackgroundColor: '#ccc',
-                navigationBarTitleText: 'WeChat',
-                navigationBarTextStyle: 'black',
+                backgroundTextStyle: 'light',
+                navigationBarBackgroundColor: '#2d8cf0',
+                navigationBarTitleText: '健锋岛海参',
+                navigationBarTextStyle: 'white',
                 enablePullDownRefresh: true,
+                onReachBottomDistance: 10
             },
             tabBar: {
                 color: '#c7cdce',
-                selectedColor: '#333',
+                selectedColor: '#2d8cf0',
                 backgroundColor: '#fff',
                 list: [{
                     pagePath: 'pages/index/index',
@@ -148,15 +99,33 @@
         }
 
         onLaunch () {
-
+            console.log(wepy);
+            console.log(wepy.getUpdateManager);
+            this.getAndDownloadNewVersion();
         }
 
-        sleep (s) {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    resolve('promise resolved');
-                }, s * 1000);
+        // 更新版本
+        getAndDownloadNewVersion () {
+            const updateManager = wx.getUpdateManager();
+
+            updateManager.onCheckForUpdate(res => {
+                // 请求完新版本信息的回调
+                console.log(res);
             });
+
+            updateManager.onUpdateReady(() => {
+                // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+                wepy.showModal({
+                    title: '更新提示',
+                    content: '新版本已经准备好，是否重启应用？',
+                    success(res) {
+                        if (res.confirm) {
+                            // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+                            updateManager.applyUpdate()
+                        }
+                    }
+                });
+            })
         }
 
         // 获取用户信息
@@ -169,3 +138,61 @@
         }
     }
 </script>
+
+<style lang="scss">
+    @import './assets/custom';
+
+    @font-face {font-family: "iconfont";
+        src: url('iconfont.eot?t=1561714336313'); /* IE9 */
+        src: url('iconfont.eot?t=1561714336313#iefix') format('embedded-opentype'), /* IE6-IE8 */
+        url('data:application/x-font-woff2;charset=utf-8;base64,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') format('woff2'),
+        url('iconfont.woff?t=1561714336313') format('woff'),
+        url('iconfont.ttf?t=1561714336313') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+        url('iconfont.svg?t=1561714336313#iconfont') format('svg'); /* iOS 4.1- */
+    }
+
+    .iconfont {
+        font-family: "iconfont" !important;
+        font-size: 16px;
+        font-style: normal;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .icon-home:before {
+        content: "\e65c";
+    }
+
+    .icon-line:before {
+        content: "\e679";
+    }
+
+    .icon-pinpai:before {
+        content: "\e664";
+    }
+
+    .icon-gouwuche:before {
+        content: "\e600";
+    }
+
+    .icon-liebiao:before {
+        content: "\e721";
+    }
+
+    .icon-wodedangxuan:before {
+        content: "\e601";
+    }
+
+    .icon-yemian-copy:before {
+        content: "\e602";
+    }
+
+    .container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+    }
+</style>

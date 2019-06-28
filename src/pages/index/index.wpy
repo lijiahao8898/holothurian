@@ -1,7 +1,7 @@
 <template>
     <view class="container">
         <!-- 轮播图 -->
-        <swiperComponent :imgList.sync="imgList"></swiperComponent>
+        <swiperComponent :imgList.sync="imgList" :type.sync="swiperType"></swiperComponent>
 
         <!-- 类目 -->
         <!-- <view class="section">
@@ -161,6 +161,7 @@
             userInfo: '',
             normalTitle: '原始标题',
             setTimeoutTitle: '标题三秒后会被修改',
+            swiperType: 1,
             count: 0,
             netrst: '',
             imgList: [],

@@ -1,0 +1,71 @@
+<template>
+    <view>
+        <!-- 轮播图 -->
+        <swiperComponent :imgList.sync="imgList" :type.sync="swiperType"></swiperComponent>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import goods from '../components/goods';
+    import swiperComponent from '../components/swiper';
+    import API from '@/utils/http/api';
+
+    const api = new API();
+
+    export default class goodsDetail extends wepy.page {
+        config = {
+            navigationBarTitleText: '商品详情',
+        };
+        data = {
+            imgList: [],
+            swiperType: 2
+
+        };
+        components = {
+            goods,
+            swiperComponent,
+        };
+
+        onShow () {
+            let pages = getCurrentPages();
+            let {options} = pages.pop();
+            if(options.goodsId) {
+                this.getGoodsDetail(options);
+            }
+        }
+
+        async getGoodsDetail (options) {
+            console.log(options);
+            wepy.showLoading({
+                title: '拼命加载中...',
+            });
+            const data = await api.getGoodsDetail({
+                ...options
+            });
+            if(data.code === 200) {
+                const rows = data.data;
+                this.imgList = [...data.data.itemCarousel];
+                console.log(this.imgList);
+                this.$apply();
+            }
+            wepy.hideLoading();
+        }
+
+        methods = {
+
+        };
+    }
+</script>
+
+<style lang="scss" type="text/scss">
+    @import "../../src/assets/config";
+
+    .footer{
+        font-size: 28rpx;
+        color: #999;
+        margin: 20rpx 0;
+        text-align: center;
+    }
+
+</style>

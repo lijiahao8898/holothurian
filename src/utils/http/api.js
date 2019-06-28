@@ -53,6 +53,16 @@ class API extends HTTP {
             }
         });
     }
+
+    getGoodsDetail(params) {
+        return this.request({
+            url: `items/${params.goodsId}`,
+            method: 'get',
+            data: {
+                ...params
+            }
+        });
+    }
 }
 
 export default API;

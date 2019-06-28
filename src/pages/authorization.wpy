@@ -20,6 +20,7 @@
     import API from '@/utils/http/api'
     let api = new API();
 
+    // 授权登录页面
     export default class Authorization extends wepy.page {
 
         data = {
@@ -39,11 +40,16 @@
 
         // 登录授权并跳转
         async getUserAuthorization (userInfo) {
+            wepy.showLoading({
+                title: '正在授权中...',
+            });
             const data = await api.authorization({
                 avatarUrl: userInfo.avatarUrl,
                 nickName: userInfo.nickName,
                 code: this.code,
             });
+            wepy.hideLoading();
+
             if(data.code === 200) {
                 wepy.setStorage({
                     key: 'token',
@@ -58,10 +64,12 @@
             onGetUserInfo (e) {
                 const {userInfo} = e.detail;
                 this.$parent.globalData.userInfo = userInfo;
+
                 wepy.setStorage({
                     key: 'userInfo',
                     data: userInfo,
                 });
+
                 this.getUserAuthorization(userInfo);
             },
         };

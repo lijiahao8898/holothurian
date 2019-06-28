@@ -1,48 +1,75 @@
 <template>
     <view>
         <scroll-view scroll-y bindscrolltoupper="upper" id="scrollView">
-            <goods></goods>
+            <goods :goodsList.sync="goodsList"></goods>
         </scroll-view>
+        <view wx:if="{{isListEnd}}">
+            <view class="footer">已经到最底部啦~</view>
+        </view>
     </view>
 </template>
 
 <script>
     import wepy from 'wepy';
     import goods from '../components/goods';
+    import API from '@/utils/http/api';
+
+    const api = new API();
 
     export default class list extends wepy.page {
         config = {
             navigationBarTitleText: '商品列表',
         };
         data = {
-            height: '500px'
+            height: '500px',
+            goodsList: [],
+            pager: {
+                pageNum: 1,
+                pageSize: 20
+            },
+            isListEnd: false
         };
         components = {
             goods
         };
 
         onShow () {
-            this.getBrandList();
+            this.getGoodsList();
         }
 
-        async getBrandList () {
+        async getGoodsList () {
             wepy.showLoading({
                 title: '拼命加载中...',
-            })
-            const data = await api.getIndexInformation();
+            });
+            const data = await api.getGoodsList({
+                ...this.pager
+            });
             if(data.code === 200) {
-                this.brandList = [...data.data.brandDTOList];
-                this.goodsList = [...data.data.itemDTOList];
-                this.imgList = [...data.data.carouselDTOList];
-                this.articleList = [...data.data.indexImgList];
+                const rows = data.data.rows;
+                this.isListEnd = rows.length <= 0;
+                console.log(this.isListEnd);
+                if(this.goodsList.length <= 0) {
+                    this.goodsList = [...rows];
+                } else {
+                    rows.forEach(item => {
+                        this.goodsList.push(item);
+                    });
+                }
                 this.$apply();
             }
             wepy.hideLoading();
         }
 
-        onPullDownRefresh () {
-            wx.showNavigationBarLoading();
-            console.log(1111);
+        async onPullDownRefresh () {
+            await this.getGoodsList();
+            wepy.stopPullDownRefresh()
+        }
+
+        onReachBottom () {
+            const pager = {...this.pager};
+            pager.pageNum += 1;
+            this.pager = {...pager};
+            this.getGoodsList();
         }
 
         methods = {
@@ -53,6 +80,14 @@
     }
 </script>
 
-<style>
+<style lang="scss" type="text/scss">
+    @import "../../src/assets/config";
+
+    .footer{
+        font-size: 28rpx;
+        color: #999;
+        margin: 20rpx 0;
+        text-align: center;
+    }
 
 </style>

@@ -1,6 +1,6 @@
 <template>
     <repeat for="{{goodsList}}" key="item.id">
-        <view class="goods">
+        <view class="goods" @tap="goDetail({{item.id}})">
             <view class="goods-item">
                 <view class="goods-item__wrapper">
                     <view class="goods-img">
@@ -28,6 +28,14 @@
         wxs = {
             filter: filter
         };
+
+        methods = {
+            goDetail (id) {
+                wx.navigateTo({
+                    url: `/pages/goodsDetail?goodsId=${id}`
+                });
+            }
+        }
     }
 </script>
 <style type="text/scss" lang="scss">
@@ -70,7 +78,7 @@
             -webkit-box-orient: vertical;
             margin: 12rpx 0;
             padding: 0 12rpx;
-            height: 40px;
+            height: 70rpx;
         }
         &-price {
             font-size: 28rpx;

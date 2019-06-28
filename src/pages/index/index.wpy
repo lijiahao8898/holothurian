@@ -1,43 +1,36 @@
-<style lang="scss" type="text/scss">
-    @import "./index";
-</style>
 <template>
     <view class="container">
-        <!-- 轮播图 start -->
+        <!-- 轮播图 -->
         <swiperComponent :imgList.sync="imgList"></swiperComponent>
-        <!-- 轮播图 end -->
 
-        <!-- 类目 start -->
+        <!-- 类目 -->
         <!-- <view class="section">
             <categoriesList></categoriesList>
         </view> -->
-        <!-- 类目 end -->
 
-        <!-- 品牌墙 start -->
+        <!-- 品牌墙 -->
         <view class="section">
             <brand :brandList.sync="brandList"></brand>
         </view>
-        <!-- 品牌墙 end -->
 
         <!-- 长图文介绍 start -->
         <view class="section introduce">
             <repeat for="{{articleList}}" key="item.id">
                 <view class="introduce-article">
-                    <view class="introduce-title">长图文介绍</view>
-                    <view class="introduce-detail">
-                        长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍长图文介绍
-                    </view>
-                    <image mode="aspectFill" src="{{item}}"/>
+                    <image 
+                    lazy-load
+                    class="introduce-article__img" 
+                    mode="scaleToFill" 
+                    src="{{item}}"
+                    />
                 </view>
             </repeat>
         </view>
-        <!-- 长图文介绍 end -->
 
         <!-- 商品 start -->
         <view class="section">
             <goods :goodsList.sync="goodsList"></goods>
         </view>
-        <!-- 商品 end -->
 
         <!--<button open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">获取用户信息</button>-->
         <!--<view class="userinfo" @tap="handleViewTap">-->
@@ -170,57 +163,7 @@
             setTimeoutTitle: '标题三秒后会被修改',
             count: 0,
             netrst: '',
-            imgList: [{
-                id: '2',
-                url: '../../images/2.jpg'
-            }, {
-                id: '3',
-                url: '../../images/3.jpg'
-            }],
-            groupList: [
-                {
-                    id: 1,
-                    name: '点击改变',
-                    list: [
-                        {
-                            childid: '1.1',
-                            childname: '子项，点我改变'
-                        }, {
-                            childid: '1.2',
-                            childname: '子项，点我改变'
-                        }, {
-                            childid: '1.3',
-                            childname: '子项，点我改变'
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                    name: '点击改变',
-                    list: [
-                        {
-                            childid: '2.1',
-                            childname: '子项，点我改变'
-                        }, {
-                            childid: '2.2',
-                            childname: '子项，点我改变'
-                        }, {
-                            childid: '2.3',
-                            childname: '子项，点我改变'
-                        }
-                    ]
-                },
-                {
-                    id: 3,
-                    name: '点击改变',
-                    list: [
-                        {
-                            childid: '3.1',
-                            childname: '子项，点我改变'
-                        }
-                    ]
-                }
-            ],
+            imgList: [],
             goodsList: [],
             brandList: [],
             articleList: [],
@@ -233,6 +176,10 @@
         };
 
         onLoad (options) {
+
+        }
+
+        onShow () {
             const userInfo = wepy.getStorageSync('userInfo');
             if (!userInfo) {
                 // 没有登录授权
@@ -243,20 +190,15 @@
             }
         }
 
-        // // 获取商品列表
-        // async getGoodsList () {
-        //     const data = await api.getGoodsList({
-        //         pageNum: 1,
-        //         pageSize: 20,
-        //     });
-        //     if(data.code === 200) {
-        //         data.data.rows.forEach(item => {
-        //             this.goodsList.push(item);
-        //         });
-        //     }
-        // }
+        async onPullDownRefresh () {
+            await this.getIndexInformation();
+            wepy.stopPullDownRefresh()
+        }
 
         async getIndexInformation () {
+            wepy.showLoading({
+                title: '拼命加载中...',
+            })
             const data = await api.getIndexInformation();
             if(data.code === 200) {
                 this.brandList = [...data.data.brandDTOList];
@@ -265,6 +207,7 @@
                 this.articleList = [...data.data.indexImgList];
                 this.$apply();
             }
+            wepy.hideLoading();
         }
 
         methods = {
@@ -323,3 +266,6 @@
         };
     }
 </script>
+<style lang="scss" type="text/scss">
+    @import "./index";
+</style>

@@ -6,7 +6,7 @@
             class="swiper">
         <repeat for="{{imgList}}" key="item.id">
             <swiper-item>
-                <image mode="aspectFill" src="{{item.imgUrl}}"/>
+                <image lazy-load mode="aspectFill" src="{{item.imgUrl}}" alt=""/>
             </swiper-item>
         </repeat>
     </swiper>
@@ -24,7 +24,7 @@
 
 <style type="text/scss" lang="scss">
     .swiper {
-        height: 375rpx;
+        height: 300rpx;
         width: 100%;
         image {
             width: inherit;

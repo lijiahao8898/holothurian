@@ -1,5 +1,5 @@
 const config = {
-    baseUrl: 'https://wx.jf-trade.cn/'
+    baseUrl: ''
 };
 
 export default config;

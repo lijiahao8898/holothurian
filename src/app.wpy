@@ -148,25 +148,7 @@
         }
 
         onLaunch () {
-            this.login();
 
-//            wepy.authorize({
-//                scope: 'scope.userInfo',
-//                success(res) {
-//                    console.log(res);
-//                }
-//            });
-//
-//            wepy.getSetting({
-//                success(res) {
-//                    console.log('res.authSetting:' + res.authSetting)
-//                    console.log(res.authSetting)
-//                    // res.authSetting = {
-//                    //   "scope.userInfo": true,
-//                    //   "scope.userLocation": true
-//                    // }
-//                }
-//            })
         }
 
         sleep (s) {
@@ -184,23 +166,6 @@
                 return this.globalData.userInfo;
             }
             console.log('放屁')
-//            wepy.getUserInfo({
-//                success (res) {
-//                    that.globalData.userInfo = res.userInfo;
-//                    cb && cb(res.userInfo);
-//                }
-//            });
-        }
-
-        // 获取code
-        login () {
-            wepy.login().then(res => {
-                console.log(res.code);
-                wepy.setStorage({
-                    key: 'wepyCode',
-                    data: res.code
-                });
-            })
         }
     }
 </script>

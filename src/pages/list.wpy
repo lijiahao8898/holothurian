@@ -21,23 +21,23 @@
             goods
         };
 
-        onLoad () {
-            const self = this;
-            wx.getSystemInfo({
-                success (res) {
-                    console.log(res.model);
-                    console.log(res.pixelRatio);
-                    console.log(res.windowWidth);
-                    console.log(res.windowHeight);
-                    self.height = res.windowHeight;
-                    console.log(res.language);
-                    console.log(res.version);
-                    console.log(res.platform);
-                },
-                fail (e) {
-                    console.log(e);
-                }
-            });
+        onShow () {
+            this.getBrandList();
+        }
+
+        async getBrandList () {
+            wepy.showLoading({
+                title: '拼命加载中...',
+            })
+            const data = await api.getIndexInformation();
+            if(data.code === 200) {
+                this.brandList = [...data.data.brandDTOList];
+                this.goodsList = [...data.data.itemDTOList];
+                this.imgList = [...data.data.carouselDTOList];
+                this.articleList = [...data.data.indexImgList];
+                this.$apply();
+            }
+            wepy.hideLoading();
         }
 
         onPullDownRefresh () {

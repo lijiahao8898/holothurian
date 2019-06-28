@@ -19,7 +19,6 @@
     import wepy from 'wepy';
     import API from '@/utils/http/api'
     let api = new API();
-    const moment = require('moment');
 
     export default class Authorization extends wepy.page {
 
@@ -31,19 +30,11 @@
         };
 
         onLoad (options) {
-            console.log('-----------');
-            console.log(options);
-            console.log(this.$parent);
-            console.log('-----------');
             const global = this.$parent.globalData;
             this.appLogo = global.appLogo;
             this.appName = global.appName;
             this.appDesc = global.appDesc;
-            wepy.getStorage({
-                key: 'wepyCode'
-            }).then(res => {
-                this.code = res.data;
-            });
+            this.login();
         }
 
         // 登录授权并跳转
@@ -62,6 +53,7 @@
             }
         }
 
+        // 获取用户信息
         methods = {
             onGetUserInfo (e) {
                 const {userInfo} = e.detail;
@@ -73,6 +65,17 @@
                 this.getUserAuthorization(userInfo);
             },
         };
+
+        // 获取code
+        login () {
+            wepy.login().then(res => {
+                wepy.setStorage({
+                    key: 'wepyCode',
+                    data: res.code
+                });
+                this.code = res.code;
+            })
+        }
     }
 </script>
 

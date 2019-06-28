@@ -14,6 +14,7 @@ class HTTP {
                     resolve(res.data);
                 } else {
                     reject(res);
+                    console.log(res);
                     wx.showToast({
                         title: res.data.message,
                         icon: 'none'
@@ -21,6 +22,7 @@ class HTTP {
                 }
             }).catch((err) => {
                 reject(err);
+                console.log(err);
                 wx.showToast({
                     title: err.data.message,
                     icon: 'none'

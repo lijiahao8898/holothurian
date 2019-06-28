@@ -22,8 +22,8 @@
 
 <style type="text/scss" lang="scss">
     .brand {
-        padding: 15rpx 0;
-        background: #ddd;
+        padding: 12rpx 0;
+        background: #f2f8f9;
         &-wrapper{
             display: flex;
             flex-wrap: wrap;

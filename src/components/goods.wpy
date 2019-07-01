@@ -26,19 +26,19 @@
         };
 
         wxs = {
-            filter: filter
+            filter
         };
 
         methods = {
             goDetail (id) {
-                wx.navigateTo({
+                wepy.navigateTo({
                     url: `/pages/goodsDetail?goodsId=${id}`
                 });
             }
         }
     }
 </script>
-<style type="text/scss" lang="scss">
+<style type="text/scss" lang="scss" scoped>
     @import "../assets/config";
     .goods {
         width: 366rpx;

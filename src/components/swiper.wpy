@@ -52,7 +52,7 @@
     }
 
     .goods-detail-swiper {
-        height: 600rpx;
+        height: 800rpx;
         width: 100%;
         image {
             width: inherit;

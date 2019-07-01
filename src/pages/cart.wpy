@@ -1,17 +1,48 @@
 <template>
-
+    <view>
+        <view wx:if="{{cartList.length > 0}}"></view>
+        <view wx:else>
+            <view class="no-item">
+                您的购物车空空如也~
+            </view>
+        </view>
+    </view>
 </template>
 
 <script>
     import wepy from 'wepy';
+    import API from '@/utils/http/api';
+
+    const api = new API();
 
     export default class cart extends wepy.page {
         config = {
             navigationBarTitleText: '购物车'
         };
+
+        data = {
+            cartList: []
+        };
+
+        onShow () {
+            this.getCartList();
+        }
+
+        async getCartList () {
+            const data = await api.getCartList();
+            if(data.code === 200) {
+                console.log(data);
+            }
+        }
     }
 </script>
 
-<style>
-
+<style type="text/scss" lang="scss" scoped>
+    @import "../../src/assets/config";
+    .no-item {
+        font-size: 14px;
+        color: $font-dark-color;
+        text-align: center;
+        margin-top: 50px;
+    }
 </style>

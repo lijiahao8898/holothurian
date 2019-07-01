@@ -14,11 +14,24 @@ class HTTP {
                     resolve(res.data);
                 } else {
                     reject(res);
-                    console.log(res);
-                    wx.showToast({
-                        title: res.data.message,
-                        icon: 'none'
-                    });
+                    const code = res.statusCode;
+                    switch (code) {
+                        case 401:
+                            wepy.navigateTo({url: `/pages/authorization?redirectUrl=`});
+                            break;
+                        case 500:
+                            wepy.showToast({
+                                title: '服务端异常，请联系管理员',
+                                icon: 'none'
+                            });
+                            break;
+                        default:
+                            wx.showToast({
+                                title: res.data.message,
+                                icon: 'none'
+                            });
+                            break;
+                    }
                 }
             }).catch((err) => {
                 reject(err);

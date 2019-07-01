@@ -1,5 +1,38 @@
 <template>
-
+    <view class="mine">
+        <view class="user">
+            <view class="avatar">
+                <image class="avatar-image" src="{{userInfo.avatarUrl}}" alt="{{userInfo.nickName}}"></image>
+            </view>
+            <view class="nick-name">{{userInfo.nickName}}</view>
+        </view>
+        <view class="order mine-item">
+            <view>我的订单</view>
+            <view class="mine-icon">
+                <van-icon name="arrow"/>
+            </view>
+        </view>
+        <view class="order-detail">
+            <view class="order-detail__item">
+                <view class="iconfont icon-daifukuan2-copy"></view>
+                待付款
+            </view>
+            <view class="order-detail__item">
+                <view class="iconfont icon-fahuotixing"></view>
+                待发货
+            </view>
+            <view class="order-detail__item">
+                <view class="iconfont icon-daishouhuo"></view>
+                待收货
+            </view>
+        </view>
+        <view class="address mine-item" @tap="goAddressList">
+            <view>收货地址</view>
+            <view class="mine-icon">
+                <van-icon name="arrow"/>
+            </view>
+        </view>
+    </view>
 </template>
 
 <script>
@@ -7,29 +40,112 @@
 
     export default class Mine extends wepy.page {
         config = {
-            navigationBarTitleText: '我的'
+            navigationBarTitleText: '我的',
+            "usingComponents": {
+                'van-icon': '../components/vant-weapp/icon/index',
+            }
+        };
+
+        data = {
+            userInfo: {}
         };
 
         onLoad () {
-            console.log(1);
-//            this.$parent.getUserInfo((userInfo) => {
-//                if (userInfo) {
-//                    this.userInfo = userInfo;
-//                }
-//                this.normalTitle = '标题已被修改1111';
-//
-//                this.setTimeoutTitle = '标题三秒后会被修改';
-//                setTimeout(() => {
-//                    this.setTimeoutTitle = '到三秒了';
-//                    this.$apply();
-//                }, 3000);
-//
-//                this.$apply();
-//            });
+           console.log(1);
+           this.$parent.getUserInfo((userInfo) => {
+               if (userInfo) {
+                   this.userInfo = userInfo;
+                   console.log(this.userInfo);
+               }
+               this.$apply();
+           });
+        }
+
+
+        async onPullDownRefresh () {
+            wepy.stopPullDownRefresh()
+        }
+
+        methods = {
+            goAddressList () {
+                wepy.navigateTo({
+                    url: `/pages/address`
+                });
+            }
         }
     }
 </script>
 
-<style>
+<style type="text/scss" lang="scss" scoped>
+    @import "../../src/assets/config";
 
+    .mine {
+        &-item {
+            background: $white;
+            font-size: 28rpx;
+            padding: 20rpx;
+            position: relative;
+            margin: 10rpx 0;
+        }
+        &-icon {
+            position: absolute;
+            right: 10rpx;
+            top: 24rpx
+        }
+    }
+
+    .user{
+        margin: 10px;
+        padding: 10px;
+        background-color: $primary-color;
+        border-radius: 10px 10px 0 0;
+        .avatar{
+            width: 120rpx;
+            height: 120rpx;
+            border-radius: 100%;
+            display: inline-block;
+            margin-right: 20px;
+            &-image {
+                width: inherit;
+                height: inherit;
+                border-radius: 100%;
+            }
+        }
+        .nick-name{
+            display: inline-block;
+            color: $white;
+            font-size: 24rpx;
+            vertical-align: top;
+            margin-top: 20px;
+            max-width: 280rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .order{
+        &-detail{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            background: $white;
+            text-align: center;
+            &__item{
+                width: 25%;
+                font-size: 24rpx;
+                padding: 10rpx;
+                color: $font-dark-color;
+            }
+        }
+    }
+
+    .iconfont {
+        font-size: 40rpx;
+        color: $font-dark-color;
+        margin-bottom: 10rpx;
+    }
 </style>

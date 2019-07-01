@@ -2,6 +2,71 @@
     <view>
         <!-- 轮播图 -->
         <swiperComponent :imgList.sync="imgList" :type.sync="swiperType"></swiperComponent>
+        <view class="goods">
+            <view class="goods-price">
+                <view class="goods-price__tip">价格：</view>
+                <view class="goods-price__discount">{{filter.accDiv(itemData.salePrice, 100)}}</view>
+                <view class="goods-price__old">{{filter.accDiv(itemData.marketPrice, 100)}}</view>
+            </view>
+            <view class="goods-name">{{itemData.name}}</view>
+            <view class="goods-detail">
+                <repeat for="{{itemData.itemAttrImgList}}" key="item.id">
+                    <image lazy-load class="goods-detail__image" mode="aspectFill" src="{{item.value}}" alt="{{item.name}}"/>
+                </repeat>
+            </view>
+        </view>
+
+        <view class="goods-popup">
+            <van-popup show="{{showPopup}}" position="bottom"
+                       bind:click-overlay="onCloseHandle">
+                <view class="sku">
+                    <image lazy-load class="sku-image" mode="aspectFill" src="{{currentSku.imgUrl}}" alt="{{currentSku.skuAttr}}"></image>
+                    <view class="sku-price">
+                        <view class="sku-price__discount">{{filter.accDiv(currentSku.skuSalePrice, 100)}}</view>
+                        <view class="sku-price__old">{{filter.accDiv(currentSku.skuMarketPrice, 100)}}</view>
+                    </view>
+                    <view class="sku-wrapper">
+                        <view class="sku-tip">型号规格：</view>
+                        <repeat for="{{itemData.itemSkuDTOList}}" key="item.id">
+                            <view
+                                class="{{item.id === currentSku.id ? 'sku-item active' : 'sku-item'}}"
+                                @tap="changeCurrentSku({{item.id}})">{{item.skuAttr}}</view>
+                        </repeat>
+                    </view>
+                    <view class="sku-wrapper">
+                        <view class="sku-tip">购买数量：</view>
+                        <van-stepper value="{{buyNum}}" bind:change="onChangeNumberHandle" integer/>
+                    </view>
+                    <button class="sku-confirm-btn" type="primary" @tap="confirm">确定</button>
+                </view>
+            </van-popup>
+        </view>
+
+        <view class="bottom-bar">
+            <van-goods-action>
+                <van-goods-action-icon
+                    icon="cart-o"
+                    text="购物车"
+                    @tap="goCart"
+                />
+                <van-goods-action-button
+                    text="加入购物车"
+                    plain
+                    type="info"
+                    size="small"
+                    custom-class="goods-active-cart"
+                    @tap="openAddCartModal"
+                />
+                <van-goods-action-button
+                    text="立即购买"
+                    type="info"
+                    size="small"
+                    @tap="openGoPayModal"
+                />
+            </van-goods-action>
+        </view>
+
+
     </view>
 </template>
 
@@ -9,17 +74,36 @@
     import wepy from 'wepy';
     import goods from '../components/goods';
     import swiperComponent from '../components/swiper';
+    import filter from '../utils/filter/index.wxs'
     import API from '@/utils/http/api';
 
     const api = new API();
 
     export default class goodsDetail extends wepy.page {
+
         config = {
             navigationBarTitleText: '商品详情',
+            usingComponents: {
+                'van-goods-action': '../components/vant-weapp/goods-action/index',
+                'van-goods-action-icon': '../components/vant-weapp/goods-action-icon/index',
+                'van-goods-action-button': '../components/vant-weapp/goods-action-button/index',
+                'van-popup': '../components/vant-weapp/popup/index',
+                'van-stepper': '../components/vant-weapp/stepper/index',
+            }
         };
+
+        wxs = {
+            filter
+        };
+
         data = {
             imgList: [],
-            swiperType: 2
+            itemData: {},
+            swiperType: 2,
+            showPopup: false,
+            currentSku: [],
+            buyNum: 1,
+            operateType: null           // 1 加入购物车 2 下单
 
         };
         components = {
@@ -32,6 +116,11 @@
             let {options} = pages.pop();
             if(options.goodsId) {
                 this.getGoodsDetail(options);
+            } else {
+                wx.showToast({
+                    title: '获取商品数据异常',
+                    icon: 'none'
+                });
             }
         }
 
@@ -46,20 +135,246 @@
             if(data.code === 200) {
                 const rows = data.data;
                 this.imgList = [...data.data.itemCarousel];
-                console.log(this.imgList);
+                this.itemData = rows;
+                this.currentSku = rows.itemSkuDTOList[0];
                 this.$apply();
             }
             wepy.hideLoading();
         }
 
-        methods = {
+        async addCart () {
+            console.log(this.buyNum);
+            const data = await api.addGoodsToCart({
+                skuId: this.currentSku.id,
+                number: this.buyNum
+            });
+            if(data.code === 200) {
+                wx.showToast({
+                    title: '成功加入购物车！',
+                    icon: 'none'
+                });
+            }
+        }
 
+        goPay () {
+
+        }
+
+        methods = {
+            goCart() {
+                wepy.switchTab({
+                    url: `/pages/cart`
+                });
+            },
+
+            openAddCartModal() {
+                this.showPopup = true;
+                this.operateType = 1;
+            },
+
+            openGoPayModal () {
+                this.showPopup = true;
+                this.operateType = 2
+            },
+
+            onCloseHandle () {
+                this.showPopup = false;
+                this.operateType = null;
+            },
+
+            onChangeNumberHandle (event) {
+                this.buyNum = event.detail;
+            },
+
+            // 改变当前选中的sku
+            changeCurrentSku (id) {
+                const {itemSkuDTOList} = this.itemData;
+                itemSkuDTOList.forEach(item => {
+                    if(item.id === Number(id)) {
+                        this.currentSku = item;
+                        this.$apply();
+                    }
+                });
+            },
+
+            confirm () {
+                if(this.operateType === 1) {
+                    this.addCart();
+                } else if (this.operateType === 2) {
+                    this.goPay();
+                }
+            },
         };
     }
 </script>
 
-<style lang="scss" type="text/scss">
+<style lang="scss" type="text/scss" scoped>
     @import "../../src/assets/config";
+
+    .goods {
+        width: 100%;
+        display: inline-block;
+        color: #666;
+        margin: 0 0 20rpx 0;
+        background: $page-bg;
+        &-item {
+            background: #fff;
+            padding-bottom: 20rpx;
+            &__wrapper {
+                width: 100%;
+                text-align: center;
+                margin: 0 auto;
+            }
+            .image {
+                width: 360rpx;
+                height: 360rpx;
+            }
+        }
+        &-name {
+            font-size: 24rpx;
+            text-align: left;
+            text-overflow: -o-ellipsis-lastline;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin: 0 0 10px 0;
+            padding: 0 10px 10px 10px;
+            height: 70rpx;
+            background: #fff;
+        }
+        &-price {
+            font-size: 28rpx;
+            text-align: left;
+            color: red;
+            padding: 0 10px;
+            background: #fff;
+            &__tip {
+                display: inline-block;
+            }
+            &__discount{
+                display: inline-block;
+                position: relative;
+                margin: 0 20rpx 0 22rpx;
+                font-size: 36rpx;
+                &:before{
+                    content: '￥';
+                    font-size: 26rpx;
+                    position: absolute;
+                    left: -20rpx;
+                    top: 8rpx;
+                }
+            }
+            &__old{
+                display: inline-block;
+                position: relative;
+                margin-left: 22rpx;
+                color: $gray;
+                text-decoration: line-through;
+                &:before{
+                    content: '￥';
+                    font-size: 24rpx;
+                    position: absolute;
+                    left: -20rpx;
+                    top: 4rpx;
+                }
+            }
+        }
+
+        &-detail{
+            padding-top: 5px;
+            background: #fff;
+            &__image{
+                width: 100%;
+            }
+        }
+    }
+
+    .sku {
+        margin-bottom: 5px;
+        position: relative;
+        &-image {
+            width: 250rpx;
+            height: 250rpx;
+            margin: 10px 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        &-wrapper {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        &-tip {
+            font-size: 28rpx;
+            margin:0 0 5px 5px;
+            color: #666;
+        }
+        &-item {
+            font-size: 24rpx;
+            color: #999;
+            background: #fff;
+            border: 1px solid #999;
+            display: inline-block;
+            padding: 5px;
+            margin: 2px 5px;
+
+            &.active {
+                color: #fff;
+                background: $primary-color;
+                border: 1px solid $primary-color;
+            }
+        }
+
+        &-price {
+            font-size: 24rpx;
+            text-align: left;
+            color: red;
+            position: absolute;
+            top: 50rpx;
+            left: 300rpx;
+            &__tip {
+                display: inline-block;
+            }
+            &__discount{
+                display: inline-block;
+                position: relative;
+                margin: 0 20rpx 0 22rpx;
+                font-size: 36rpx;
+                &:before{
+                    content: '￥';
+                    font-size: 26rpx;
+                    position: absolute;
+                    left: -20rpx;
+                    top: 8rpx;
+                }
+            }
+            &__old{
+                display: inline-block;
+                position: relative;
+                margin-left: 22rpx;
+                color: $gray;
+                text-decoration: line-through;
+                &:before{
+                    content: '￥';
+                    font-size: 24rpx;
+                    position: absolute;
+                    left: -20rpx;
+                    top: 4rpx;
+                }
+            }
+        }
+
+        &-confirm-btn {
+            background: $primary-color !important;
+            width: 80%;
+            margin: 0 auto;
+        }
+    }
 
     .footer{
         font-size: 28rpx;
@@ -68,4 +383,24 @@
         text-align: center;
     }
 
+    .bottom{
+        &-bar{
+            position: fixed;
+            height: 60rpx;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: $primary-color;
+        }
+    }
+
+</style>
+
+<style lang="scss" type="text/scss">
+    @import "../../src/assets/config";
+
+    .goods-active-cart{
+        background-color: $primary-color-light!important;
+        border-color: $primary-color-light!important
+    }
 </style>

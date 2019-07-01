@@ -186,8 +186,9 @@
                 // 没有登录授权
                 wepy.navigateTo({url: `/pages/authorization?redirectUrl=`});
             } else {
-                // this.getGoodsList();
-                this.getIndexInformation();
+                if(this.imgList.length <= 0) {
+                    this.getIndexInformation();
+                }
             }
         }
 

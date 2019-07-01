@@ -34,7 +34,9 @@
         };
 
         onShow () {
-            this.getGoodsList();
+            if(this.goodsList.length <= 0) {
+                this.getGoodsList();
+            }
         }
 
         async getGoodsList () {

@@ -1,6 +1,43 @@
 <template>
-    <view>
-        <view wx:if="{{cartList.length > 0}}"></view>
+    <view class="cart">
+        <view wx:if="{{cartList.length > 0}}" class="cart-wrapper">
+            <repeat for="{{cartList}}" key="{{item.id}}">
+                <van-swipe-cell id="swipe-cell" right-width="{{ 65 }}" async-close bind:close="onClose({{item.id}})">
+                    <view class="cart-item">
+                        <view class="cart-item__checkbox">
+                            <van-checkbox value="{{item.checked}}" bind:change="onChange({{item.id}})"></van-checkbox>
+                        </view>
+                        <image lazy-load class="cart-item__image" mode="aspectFill" src="{{item.skuImgUrl}}"></image>
+                        <view class="cart-container">
+                            <view class="cart-container__name">{{item.itemName}}</view>
+                            <view class="cart-container__sku">{{item.skuAttr}}</view>
+                            <view class="cart-container-price">
+                                <view class="cart-container-price__discount">{{filter.accDiv(item.skuSalePrice, 100)}}</view>
+                            </view>
+                            <view class="cart-container__stepper">
+                                <van-stepper
+                                    value="{{item.number}}"
+                                    bind:change="onChangeNumberHandle({{item.id}})"
+                                    integer/>
+                            </view>
+                        </view>
+                    </view>
+                    <view slot="right" class="cart-item__close">删除</view>
+                </van-swipe-cell>
+            </repeat>
+            <view class="cart-submit">
+                <van-submit-bar
+                    price="{{price}}"
+                    button-text="下单"
+                    bind:submit="onClickButton"
+                    tip="{{ true }}"
+                    custom-class="cart-submit__bar"
+                    button-class="cart-submit__button"
+                >
+                    <van-checkbox class="cart-submit__checkbox" value="{{checkBoxAll}}" bind:change="onChangeAllHandle"></van-checkbox>
+                </van-submit-bar>
+            </view>
+        </view>
         <view wx:else>
             <view class="no-item">
                 您的购物车空空如也~
@@ -12,26 +49,115 @@
 <script>
     import wepy from 'wepy';
     import API from '@/utils/http/api';
+    import filter from '../utils/filter/index.wxs'
 
     const api = new API();
 
     export default class cart extends wepy.page {
         config = {
-            navigationBarTitleText: '购物车'
+            navigationBarTitleText: '购物车',
+            'usingComponents': {
+                'van-checkbox': '../components/vant-weapp/checkbox/index',
+                'van-checkbox-group': '../components/vant-weapp/checkbox-group/index',
+                'van-stepper': '../components/vant-weapp/stepper/index',
+                "van-submit-bar": "../components/vant-weapp/submit-bar/index",
+                "van-swipe-cell": "../components/vant-weapp/swipe-cell/index"
+            }
+        };
+
+        wxs = {
+            filter
         };
 
         data = {
-            cartList: []
+            cartList: [],
+            checkBoxAll: false
+        };
+
+        computed = {
+            price () {
+                let price = 0;
+                this.cartList.forEach(item => {
+                    if(item.checked) {
+                        price += (item.skuSalePrice * item.number);
+                    }
+                });
+                return price;
+            },
+
+            checkBoxAll () {
+                let n = 0;
+                this.cartList.forEach(item => {
+                    if(item.checked) {
+                        n += 1;
+                    }
+                });
+                return n === this.cartList.length;
+            }
         };
 
         onShow () {
             this.getCartList();
         }
 
+        async onPullDownRefresh () {
+            await this.getCartList();
+            wepy.stopPullDownRefresh()
+        }
+
         async getCartList () {
+            wepy.showLoading({
+                title: '拼命加载中...',
+            });
             const data = await api.getCartList();
-            if(data.code === 200) {
-                console.log(data);
+            if (data.code === 200) {
+                this.cartList = [...data.data];
+                this.$apply();
+            }
+            wepy.hideLoading({
+                title: '拼命加载中...',
+            });
+        }
+
+        methods = {
+            onChange (id, event) {
+                this.cartList.forEach(item => {
+                    if(item.id === Number(id)) {
+                        item.checked = event.detail;
+                        this.$apply();
+                    }
+                });
+            },
+
+            async onChangeNumberHandle (id, event) {
+                const data = await api.updateCartItemNumber({
+                    id: id,
+                    number: event.detail
+                });
+                if(data.code === 200) {
+                    this.cartList.forEach(item => {
+                        if(item.id === Number(id)) {
+                            item.number = event.detail;
+                            this.$apply();
+                        }
+                    });
+                }
+            },
+
+            onClickButton () {
+
+            },
+
+            // checkbox all
+            onChangeAllHandle (event) {
+                this.cartList.forEach(item => {
+                    item.checked = event.detail;
+                });
+                this.$apply();
+            },
+
+            onClose (id, event) {
+                console.log(id)
             }
         }
     }
@@ -39,10 +165,127 @@
 
 <style type="text/scss" lang="scss" scoped>
     @import "../../src/assets/config";
+
     .no-item {
         font-size: 14px;
         color: $font-dark-color;
         text-align: center;
         margin-top: 50px;
+    }
+
+    .cart {
+        &-wrapper{
+            padding-bottom: 60px;
+        }
+        &-item {
+            background: $white;
+            margin: 10px 5px;
+            position: relative;
+            overflow: hidden;
+            &__close {
+                background: $primary-color-red;
+                color: $white;
+                height: inherit;
+                width: 65px;
+                line-height: 120px;
+                font-size: 12px;
+                text-align: center;
+            }
+
+            &__image {
+                width: 100px;
+                height: 100px;
+                margin: 5px 5px 5px 40px;
+                float: left;
+            }
+
+            &__checkbox {
+                position: absolute;
+                left: 10px;
+                top: 45px;
+            }
+        }
+
+        &-submit {
+            position: fixed;
+            bottom: 0;
+            &__checkbox {
+                margin-left: 15px;
+            }
+            &__bar {
+                z-index: 256;
+            }
+            &__button {
+                background-color: $primary-color;
+            }
+        }
+
+        &-container {
+            float: left;
+            margin: 10px 0 0 10px;
+            position: relative;
+            height: 110px;
+
+            &__name {
+                font-size: 12px;
+                color: $font-dark-color;
+                max-width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            &__sku {
+                font-size: 12px;
+                color: $font-light-color;
+                max-width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-top: 4px;
+            }
+
+            &-price {
+                font-size: 12px;
+                text-align: left;
+                color: red;
+                padding: 0 4px;
+                &__discount{
+                    display: inline-block;
+                    position: relative;
+                    margin: 10px 0 0 10px;
+                    font-size: 14px;
+                    &:before{
+                        content: '￥';
+                        font-size: 14px;
+                        position: absolute;
+                        left: -15px;
+                        top: 0;
+                    }
+                }
+            }
+
+            &__stepper{
+                position: absolute;
+                bottom: 5px;
+                right: 0;
+                z-index: 0;
+            }
+        }
+    }
+</style>
+
+<style type="text/scss" lang="scss">
+    @import "../../src/assets/config";
+    .cart {
+        &-submit {
+            &__bar {
+                z-index: 10999!important;
+            }
+            &__button {
+                background-color: $primary-color!important;
+                border: 1px solid $primary-color!important;
+            }
+        }
     }
 </style>

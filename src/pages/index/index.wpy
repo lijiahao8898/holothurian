@@ -17,10 +17,10 @@
         <view class="section introduce">
             <repeat for="{{articleList}}" key="item.id">
                 <view class="introduce-article">
-                    <image 
+                    <image
                     lazy-load
-                    class="introduce-article__img" 
-                    mode="scaleToFill" 
+                    class="introduce-article__img"
+                    mode="scaleToFill"
                     src="{{item}}"
                     />
                 </view>
@@ -200,7 +200,7 @@
         async getIndexInformation () {
             wepy.showLoading({
                 title: '拼命加载中...',
-            })
+            });
             const data = await api.getIndexInformation();
             if(data.code === 200) {
                 this.brandList = [...data.data.brandDTOList];

@@ -83,6 +83,17 @@ class API extends HTTP {
         });
     }
 
+    // 更新购物车数量
+    updateCartItemNumber (params) {
+        return this.request({
+            url: `carts`,
+            method: 'put',
+            data: {
+                ...params
+            }
+        });
+    }
+
     // 获取收货地址列表
     getAddressList (params) {
         return this.request({

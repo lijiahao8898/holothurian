@@ -124,6 +124,13 @@
             }
         }
 
+        async onPullDownRefresh () {
+            let pages = getCurrentPages();
+            let {options} = pages.pop();
+            await this.getGoodsDetail(options);
+            wepy.stopPullDownRefresh()
+        }
+
         async getGoodsDetail (options) {
             console.log(options);
             wepy.showLoading({

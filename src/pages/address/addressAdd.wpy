@@ -1,0 +1,363 @@
+<template>
+    <view class="address-add">
+        <view class="address-save" @tap="saveAddress">保存</view>
+        <view class="form">
+            <van-cell-group>
+                <van-field
+                    value="{{ params.userName }}"
+                    placeholder="请输入收货人姓名"
+                    border
+                    required
+                    label="收货人姓名："
+                    bind:change="onChangeUserName"
+                ></van-field>
+                <van-field
+                    value="{{ params.phone }}"
+                    placeholder="请输入手机号码"
+                    border
+                    required
+                    label="手机号码："
+                    bind:change="onChangePhone"
+                ></van-field>
+                <view @tap="onFocusAddressSelect">
+                    <van-field
+                        value="{{ params.areaAddress }}"
+                        placeholder="请输入收货地址"
+                        border
+                        readonly
+                        required
+                        label="收货地址："
+                    ></van-field>
+                </view>
+                <van-field
+                    value="{{ params.detailAddress }}"
+                    placeholder="请输入详细地址"
+                    border
+                    required
+                    label="详细地址："
+                    bind:change="onChangeDetailAddress"
+                ></van-field>
+                <van-switch-cell
+                    title="设为默认"
+                    checked="{{ defaultArea }}"
+                    bind:change="onChangeSetDefaultArea"
+                ></van-switch-cell>
+            </van-cell-group>
+        </view>
+
+        <van-popup show="{{showPopup}}" position="bottom">
+            <van-picker
+                show-toolbar
+                title="标题"
+                columns="{{ columns }}"
+                bind:cancel="onCancel"
+                bind:confirm="onConfirm"
+                bind:change="onChangeAddressSelect"
+                id="picker"
+            ></van-picker>
+        </van-popup>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import API from '@/utils/http/api';
+
+    const api = new API();
+
+    export default class Address extends wepy.page {
+        config = {
+            navigationBarTitleText: '收货地址',
+            'usingComponents': {
+                "van-cell": "../../components/vant-weapp/cell/index",
+                "van-cell-group": "../../components/vant-weapp/cell-group/index",
+                'van-field': '../../components/vant-weapp/field/index',
+                'van-picker': '../../components/vant-weapp/picker/index',
+                'van-popup': '../../components/vant-weapp/popup/index',
+                "van-switch-cell": "../../components/vant-weapp/switch-cell/index"
+            }
+        };
+
+        data = {
+            addressList: [],
+            columns: [],
+            params: {
+                userName: '',
+                phone: '',
+                detailAddress: '',
+                areaAddress: ''
+            },
+            selectArea: [],
+            nextApiCode: null,
+            showPopup: false,
+            defaultArea: true,
+            addressId: null
+        };
+
+        onShow () {
+            let pages = getCurrentPages();
+            let {options} = pages.pop();
+            if(options.addressId) {
+                this.addressId = options.addressId;
+                this.getAddressInfo(options);
+            }
+
+        }
+
+        async onPullDownRefresh () {
+            wepy.stopPullDownRefresh();
+        }
+
+        async getAddressInfo (options) {
+            const data = await api.getRecipientAddress({
+                id: options.addressId
+            });
+            if(data.code === 200) {
+                const {
+                    userName,
+                    phone,
+                    detailAddress,
+                    province,
+                    city,
+                    area,
+                    street,
+                    provinceCode,
+                    cityCode,
+                    areaCode,
+                    streetCode
+                } = data.data;
+                const obj = {
+                    userName,
+                    phone,
+                    detailAddress,
+                    areaAddress: `${province}${city}${area}${street}`
+                };
+                this.params = Object.assign({}, obj);
+                const columns = {
+                    values: [{
+                    text: province,
+                    code: provinceCode
+                }, {
+                    text: city,
+                    code: cityCode
+                }, {
+                    text: area,
+                    code: areaCode
+                }, {
+                    text: street,
+                    code: streetCode
+                }]};
+                this.selectArea = columns.values;
+
+                this.$apply();
+            }
+        }
+
+        async getCity (picker, code, index) {
+            const data = await api.getAddress({
+                code: code
+            });
+            if (data.code === 200) {
+                if(data.data.length > 0) {
+                    if(!this.selectArea || this.selectArea.length <= 0) {
+                        // 新增
+                        this.nextApiCode = data.data[0].code;
+                    } else {
+                        this.nextApiCode = this.selectArea[index + 1].code;
+                    }
+                    const columns = data.data.map(item => {
+                        return {
+                            text: item.name,
+                            code: item.code
+                        };
+                    });
+                    this.columns[index + 1] = {
+                        values: [...columns]
+                    };
+                    this.$apply();
+                    // picker.setColumnValues((index + 1), columns);
+                }
+            }
+        }
+
+        methods = {
+            async saveAddress () {
+                const selectArea = [...this.selectArea];
+                const {userName, phone, detailAddress} = this.params;
+                if(selectArea.length < 4) {
+                    wepy.showToast({
+                        title: '请选择正确的收货地址！',
+                        icon: 'none',
+                        duration: 2000,
+                        mask: true
+                    });
+                    return;
+                } else if (userName === '' || phone === '' || detailAddress === '') {
+                    wepy.showToast({
+                        title: '请填写其他信息！',
+                        icon: 'none',
+                        duration: 2000,
+                        mask: true
+                    });
+                    return;
+                }
+                wepy.showLoading({
+                    title: '正在添加新收货地址...',
+                });
+                const data = await api.addAddress({
+                    isDefault: this.defaultArea ? 1 : 0,
+                    ...this.params,
+                    province: selectArea[0].text,
+                    provinceCode: selectArea[0].code,
+                    city: selectArea[1].text,
+                    cityCode: selectArea[1].code,
+                    area: selectArea[2].text,
+                    areaCode: selectArea[2].code,
+                    street: selectArea[3].text,
+                    streetCode: selectArea[3].code
+                });
+                wepy.hideLoading();
+                if(data.code === 200) {
+                    wepy.showToast({
+                        title: '添加收货地址成功！',
+                        icon: 'success',
+                        duration: 2000,
+                        mask: true
+                    });
+                }
+            },
+
+            onConfirm (event) {
+                const {picker, value, index} = event.detail;
+                // 选择完毕 赋值啦！
+                this.selectArea = [...value];
+
+                this.showPopup = false;
+                this.nextApiCode = null;
+
+                let text = '';
+                value.forEach(item => {
+                    text += item.text;
+                });
+                this.params.areaAddress = text;
+                this.$apply();
+            },
+
+            onCancel () {
+                this.showPopup = false;
+                this.nextApiCode = null;
+                if(!this.addressId) {
+                    this.selectArea = [];
+                }
+            },
+
+            async onFocusAddressSelect () {
+                this.showPopup = true;
+                this.columns = [];
+                const picker = this.$wxpage.selectComponent('#picker');
+                const data = await api.getAddress({
+                    code: 0
+                });
+                let positionArr = [];
+
+                if (data.code === 200) {
+                    const columns = data.data.map(item => {
+                        return {
+                            text: item.name,
+                            code: item.code
+                        };
+                    });
+                    this.columns.push({
+                        values: [...columns]
+                    });
+                    this.$apply();
+
+                    if (this.addressId) {
+                        // 编辑
+                        if (this.selectArea) {
+                            let index = 0;
+                            let codeArr = this.selectArea.map(item => {
+                                return item.code;
+                            });
+
+                            for (let i = index; i < 3; i++) {
+                                // 当前索引
+                                if(!this.nextApiCode) {
+                                    this.nextApiCode = this.selectArea[0].code;
+                                }
+                                let code = this.nextApiCode;
+                                await this.getCity(picker, code, i);
+                                if(i === 2) {
+                                    this.columns.forEach((item, index) => {
+                                        item.values.forEach((o, i) => {
+                                            if(codeArr.includes(o.code)) {
+                                                positionArr.push(i)
+                                            }
+                                        })
+                                    })
+                                }
+                            }
+                        }
+                        this.$apply();
+                        setTimeout(() => {
+                            picker.setValues(this.selectArea);
+                            picker.setIndexes(positionArr)
+                        }, 0);
+                    }
+                }
+            },
+
+            async onChangeAddressSelect (event) {
+                const {picker, value, index} = event.detail;
+                if (index < 3) {
+                    for(let i = index; i < 3; i ++) {
+                        // 当前索引
+                        let code;
+                        if(i === index) {
+                            code = value[index].code;
+                        } else {
+                            code = this.nextApiCode
+                        }
+                        await this.getCity(picker, code, i);
+                    }
+                }
+            },
+
+            onChangeSetDefaultArea(event) {
+                this.defaultArea = event.detail;
+            },
+
+            onChangeUserName (event) {
+                this.params.userName = event.detail;
+            },
+
+            onChangeDetailAddress (event) {
+                this.params.detailAddress = event.detail;
+            },
+
+            onChangePhone (event) {
+                this.params.phone = event.detail;
+            }
+        };
+    }
+</script>
+
+<style type="text/scss" lang="scss" scoped>
+    @import "../../assets/config";
+
+    .address {
+        &-add {
+            font-size: 14px;
+            width: 100%;
+            margin: 20px auto 0;
+        }
+        &-save {
+            font-size: 14px;
+            text-align: right;
+            height: 44px;
+            line-height: 44px;
+            padding-right: 20px;
+            background: $white;
+        }
+    }
+</style>

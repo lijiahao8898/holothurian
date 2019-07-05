@@ -94,6 +94,17 @@ class API extends HTTP {
         });
     }
 
+    // 删除购物车商品
+    deleteCartItem (params) {
+        return this.request({
+            url: `carts?id=${params.id}`,
+            method: 'delete',
+            data: {
+                ...params
+            }
+        })
+    }
+
     // 获取收货地址列表
     getAddressList (params) {
         return this.request({
@@ -103,6 +114,38 @@ class API extends HTTP {
                 ...params
             }
         });
+    }
+
+    // 获取省市区地址库
+    getAddress (params) {
+        return this.request({
+            url: 'address',
+            method: 'get',
+            data: {
+                ...params
+            }
+        })
+    }
+
+    // 新增收货地址
+    addAddress (params) {
+        return this.request({
+            url: 'recipient-address',
+            method: 'post',
+            data: {
+                ...params
+            }
+        })
+    }
+
+    getRecipientAddress (params) {
+        return this.request({
+            url: 'recipient-address',
+            method: 'get',
+            data: {
+                ...params
+            }
+        })
     }
 }
 

@@ -7,7 +7,7 @@
                         <view class="cart-item__checkbox">
                             <van-checkbox value="{{item.checked}}" bind:change="onChange({{item.id}})"></van-checkbox>
                         </view>
-                        <image lazy-load class="cart-item__image" mode="aspectFill" src="{{item.skuImgUrl}}"></image>
+                        <image lazy-load class="cart-item__image" mode="aspectFill" src="{{item.skuImgUrl}}" @tap="goGoodsDetail({{item.itemId}})"></image>
                         <view class="cart-container">
                             <view class="cart-container__name">{{item.itemName}}</view>
                             <view class="cart-container__sku">{{item.skuAttr}}</view>
@@ -105,6 +105,7 @@
             wepy.stopPullDownRefresh()
         }
 
+        // 获取购物车列表
         async getCartList () {
             wepy.showLoading({
                 title: '拼命加载中...',
@@ -119,7 +120,36 @@
             });
         }
 
+        // 删除购物车商品
+        async deleteCartItem (id) {
+            wepy.showLoading({
+                title: '正在删除...',
+            });
+            const data = await api.deleteCartItem({
+                id
+            });
+            wepy.hideLoading();
+            wepy.showToast({
+                title: '删除成功！',
+                icon: 'success',
+                duration: 2000
+            });
+
+            if(data.code === 200) {
+                let cartList = [...this.cartList];
+                cartList.forEach((item, index) => {
+                    if(item.id === Number(id)) {
+                        cartList.splice(index, 1)
+                    }
+                });
+                console.log(cartList);
+                this.cartList = [...cartList];
+                this.$apply();
+            }
+        }
+
         methods = {
+            // checkbox
             onChange (id, event) {
                 this.cartList.forEach(item => {
                     if(item.id === Number(id)) {
@@ -129,6 +159,14 @@
                 });
             },
 
+            // 去商品详情
+            goGoodsDetail (id) {
+                wepy.navigateTo({
+                    url: `/pages/goodsDetail?goodsId=${id}`
+                });
+            },
+
+            // 修改商品的数目
             async onChangeNumberHandle (id, event) {
                 const data = await api.updateCartItemNumber({
                     id: id,
@@ -144,8 +182,9 @@
                 }
             },
 
+            // 下单
             onClickButton () {
-
+                // todo 下单
             },
 
             // checkbox all
@@ -156,8 +195,30 @@
                 this.$apply();
             },
 
+            // 删除 handle
             onClose (id, event) {
-                console.log(id)
+                const { position, instance } = event.detail;
+                switch (position) {
+                    case 'left':
+                    case 'cell':
+                        instance.close();
+                        break;
+                    case 'right':
+                        wepy.showModal({
+                            title: '温馨提示',
+                            content: '确定要删除选中的内容吗？',
+                            cancelColor: '#ddd',
+                            confirmColor: '#1ea9f0',
+                        }).then((res) => {
+                            instance.close();
+                            if (res.confirm) {
+                                this.deleteCartItem(id)
+                            } else if (res.cancel) {
+
+                            }
+                        });
+                        break;
+                }
             }
         }
     }
@@ -179,7 +240,7 @@
         }
         &-item {
             background: $white;
-            margin: 10px 5px;
+            margin: 5px;
             position: relative;
             overflow: hidden;
             &__close {

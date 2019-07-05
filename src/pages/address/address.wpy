@@ -1,11 +1,24 @@
 <template>
     <view class="address">
+        <view class="address-tap-add" @tap="goAddressAdd">添加新地址</view>
         <view wx:if="{{addressList.length > 0}}">
-
+            <repeat for="{{addressList}}" key="item">
+                <view class="address-item">
+                    <view>
+                        {{item.userName}}
+                        <text class="address-item__phone">{{item.phone}}</text>
+                    </view>
+                    <view>
+                        <text class="address-item__default">{{item.isDefault ? '默认' : ''}}</text>
+                        {{item.province}}{{item.city}}{{item.area}}{{item.street}}{{item.detailAddress}}
+                    </view>
+                    <view class="address-item__edit" @tap="goAddressEdit({{item.id}})">编辑</view>
+                </view>
+            </repeat>
         </view>
         <view wx:else>
             <view class="no-item">您还没有任何收货地址~</view>
-            <button type="primary" class="address-add btn-primary">添加</button>
+            <button type="primary" class="address-add btn-primary" @tap="goAddressAdd">添加</button>
         </view>
     </view>
 </template>
@@ -21,6 +34,7 @@
             navigationBarTitleText: '收货地址',
             "usingComponents": {
                 'van-icon': '../../components/vant-weapp/icon/index',
+                "van-popup": "../../components/vant-weapp/popup/index"
             }
         };
 
@@ -29,18 +43,36 @@
         };
 
         onShow () {
-            console.log(1);
+            this.getAddressList();
+        }
+
+
+        async onPullDownRefresh () {
+            this.getAddressList();
+            wepy.stopPullDownRefresh()
         }
 
         async getAddressList () {
-            const data = await api.getAddressList()
+            const data = await api.getAddressList();
             if(data.code === 200) {
-
+                this.addressList = [...data.data];
+                console.log(this.addressList);
+                this.$apply();
             }
         }
 
-        async onPullDownRefresh () {
-            wepy.stopPullDownRefresh()
+        methods = {
+            goAddressAdd () {
+                wepy.navigateTo({
+                    url: `/pages/address/addressAdd`
+                });
+            },
+
+            goAddressEdit (id) {
+                wepy.navigateTo({
+                    url: `/pages/address/addressAdd?addressId=${id}`
+                });
+            }
         }
     }
 </script>
@@ -50,9 +82,43 @@
 
     .address {
         &-add {
-            font-size: 28rpx;
+            font-size: 14px;
             width: 25%;
-            margin: 40rpx auto 0;
+            margin: 20px auto 0;
+        }
+        &-tap {
+            &-add {
+                font-size: 14px;
+                text-align: right;
+                height: 44px;
+                line-height: 44px;
+                padding-right: 20px;
+                background: $white;
+            }
+        }
+        &-item{
+            font-size: 12px;
+            color: $font-dark-color;
+            background: $white;
+            padding: 5px;
+            margin: 5px;
+            line-height: 20px;
+            border-radius: 4px;
+            position: relative;
+            &__phone {
+                margin-left: 10px;
+            }
+            &__default {
+                margin-right: 10px;
+                color: $primary-color-red;
+                font-weight: bold;
+            }
+            &__edit {
+                font-size: 12px;
+                position: absolute;
+                right: 10px;
+                top: 15px;
+            }
         }
     }
 </style>

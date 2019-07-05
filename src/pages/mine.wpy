@@ -69,7 +69,7 @@
         methods = {
             goAddressList () {
                 wepy.navigateTo({
-                    url: `/pages/address`
+                    url: `/pages/address/address`
                 });
             }
         }

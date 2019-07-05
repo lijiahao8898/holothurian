@@ -138,6 +138,27 @@ class API extends HTTP {
         })
     }
 
+    editAddress (params) {
+        return this.request({
+            url: 'recipient-address',
+            method: 'put',
+            data: {
+                ...params
+            }
+        })
+    }
+
+    deleteAddress (params) {
+        return this.request({
+            url: 'recipient-address',
+            method: 'delete',
+            data: {
+                ...params
+            }
+        })
+    }
+
+    // 获取已经录入的地址数据
     getRecipientAddress (params) {
         return this.request({
             url: 'recipient-address',

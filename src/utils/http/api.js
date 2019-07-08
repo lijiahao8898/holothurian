@@ -150,7 +150,7 @@ class API extends HTTP {
 
     deleteAddress (params) {
         return this.request({
-            url: 'recipient-address',
+            url: `recipient-address?id=${params.id}`,
             method: 'delete',
             data: {
                 ...params
@@ -163,6 +163,17 @@ class API extends HTTP {
         return this.request({
             url: 'recipient-address',
             method: 'get',
+            data: {
+                ...params
+            }
+        })
+    }
+
+    // 订单
+    createOrders (params) {
+        return this.request({
+            url: 'orders',
+            method: 'post',
             data: {
                 ...params
             }

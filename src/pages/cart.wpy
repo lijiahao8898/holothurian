@@ -184,7 +184,28 @@
 
             // 下单
             onClickButton () {
-                // todo 下单
+                wepy.showLoading({
+                    title: '正在创建订单'
+                });
+
+                const cartList = [...this.cartList];
+                let currentList = [];
+
+                cartList.forEach(item => {
+                    if(item.checked) {
+                        currentList.push(item)
+                    }
+                });
+                wepy.setStorage({
+                    key: 'orderInfo',
+                    data: [...currentList]
+                }).then((res) => {
+                    console.log(res);
+                    wepy.hideLoading();
+                    wepy.navigateTo({
+                        url: `/pages/orderConfirm`
+                    });
+                });
             },
 
             // checkbox all

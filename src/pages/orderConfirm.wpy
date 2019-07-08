@@ -1,0 +1,234 @@
+<template>
+    <view>
+        <view>
+            <repeat for="{{addressList}}" key="item">
+                <view class="address-item" @tap="reselectAddress">
+                    <view>
+                        {{item.userName}}
+                        <text class="address-item__phone">{{item.phone}}</text>
+                    </view>
+                    <view>{{item.province}}{{item.city}}{{item.area}}{{item.street}}{{item.detailAddress}}</view>
+                </view>
+            </repeat>
+        </view>
+        <view>
+            <repeat for="{{goodsInfo}}" key="item.id">
+                <view class="goods-item">
+                    <image lazy-load class="goods-item__image" mode="aspectFill" src="{{item.imgUrl || item.skuImgUrl}}"
+                           @tap="goGoodsDetail({{item.itemId}})"></image>
+                    <view class="goods-container">
+                        <view class="goods-container__name">{{item.itemName}}</view>
+                        <view class="goods-container__sku">{{item.skuAttr}}</view>
+                        <view class="goods-container-price">
+                            <view class="goods-container-price__discount">{{filter.accDiv(item.skuSalePrice, 100)}}</view>
+                        </view>
+                        <view class="goods-item__number">x{{item.number}}</view>
+                    </view>
+                </view>
+            </repeat>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import goods from '../components/goods';
+    import API from '@/utils/http/api';
+    import filter from '../utils/filter/index.wxs';
+
+    const api = new API();
+
+    export default class orderConfirm extends wepy.page {
+        config = {
+            navigationBarTitleText: '确认订单',
+        };
+        data = {
+            height: '500px',
+            addressList: [],
+            currentAddressList: null,
+            goodsInfo: []
+        };
+        components = {
+            goods
+        };
+        wxs = {
+            filter
+        };
+
+        onShow () {
+            this.getGoodsStorage();
+            this.getAddressList();
+        }
+
+        getGoodsStorage () {
+            this.goodsInfo = wepy.getStorageSync('orderInfo');
+            console.log(this.goodsInfo);
+        }
+
+        async onPullDownRefresh () {
+            wepy.stopPullDownRefresh();
+        }
+
+        async getAddressList () {
+            const data = await api.getAddressList();
+            if (data.code === 200) {
+                this.addressList = [...data.data];
+                this.currentAddressList = this.addressList.map(item => {
+                    if (item.isDefault) {
+                        return item;
+                    }
+                });
+                this.$apply();
+            }
+        }
+
+        methods = {
+            upper (e) {
+                console.log(e);
+            },
+
+            goGoodsDetail (id) {
+                wepy.navigateTo({
+                    url: `/pages/goodsDetail?goodsId=${id}`
+                });
+            },
+
+            reselectAddress () {
+                // todo 重新选择收货地址
+            }
+        };
+    }
+</script>
+
+<style lang="scss" type="text/scss">
+    @import "../../src/assets/config";
+
+    .address {
+        &-item{
+            font-size: 12px;
+            color: $font-dark-color;
+            background: $white;
+            padding: 5px;
+            margin: 5px;
+            line-height: 20px;
+            border-radius: 4px;
+            position: relative;
+            &__phone {
+                margin-left: 10px;
+            }
+            &__edit {
+                font-size: 12px;
+                position: absolute;
+                right: 10px;
+                top: 15px;
+            }
+        }
+    }
+
+    .goods {
+        &-wrapper {
+            padding-bottom: 60px;
+        }
+
+        &-item {
+            background: $white;
+            margin: 5px;
+            position: relative;
+            overflow: hidden;
+
+            &__close {
+                background: $primary-color-red;
+                color: $white;
+                height: inherit;
+                width: 65px;
+                line-height: 120px;
+                font-size: 12px;
+                text-align: center;
+            }
+
+            &__image {
+                width: 100px;
+                height: 100px;
+                margin: 5px;
+                float: left;
+            }
+
+            &__number {
+                position: absolute;
+                right: 0;
+                bottom: 35px;
+                font-size: 12px;
+                color: $font-dark-color;
+            }
+        }
+
+        &-submit {
+            position: fixed;
+            bottom: 0;
+
+            &__bar {
+                z-index: 256;
+            }
+
+            &__button {
+                background-color: $primary-color;
+            }
+        }
+
+        &-container {
+            float: left;
+            margin: 10px 0 0 10px;
+            position: relative;
+            height: 100px;
+
+            &__name {
+                font-size: 12px;
+                color: $font-dark-color;
+                max-width: 250px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            &__sku {
+                font-size: 12px;
+                color: $font-light-color;
+                max-width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-top: 4px;
+            }
+
+            &-price {
+                font-size: 12px;
+                text-align: left;
+                color: red;
+                padding: 0 4px;
+                margin-top: 10px;
+
+                &__discount {
+                    display: inline-block;
+                    position: relative;
+                    margin: 0 0 0 10px;
+                    font-size: 14px;
+
+                    &:before {
+                        content: '￥';
+                        font-size: 14px;
+                        position: absolute;
+                        left: -15px;
+                        top: 0;
+                    }
+                }
+            }
+
+            &__stepper {
+                position: absolute;
+                bottom: 5px;
+                right: 0;
+                z-index: 0;
+            }
+        }
+    }
+</style>

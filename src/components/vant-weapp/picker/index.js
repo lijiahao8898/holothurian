@@ -116,8 +116,6 @@ VantComponent({
         },
         // set values of all columns
         setValues(values) {
-            console.log('----------');
-            console.log(values);
             const stack = values.map((value, index) => this.setColumnValue(index, value));
             return Promise.all(stack);
         },

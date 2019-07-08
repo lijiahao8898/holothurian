@@ -13,7 +13,7 @@ class HTTP {
                 if (res.data.code === 200) {
                     resolve(res.data);
                 } else {
-                    reject(res);
+                    resolve(res.data);
                     const code = res.statusCode;
                     switch (code) {
                         case 401:

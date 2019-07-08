@@ -127,7 +127,8 @@
                     provinceCode,
                     cityCode,
                     areaCode,
-                    streetCode
+                    streetCode,
+                    isDefault
                 } = data.data;
                 const obj = {
                     userName,
@@ -155,6 +156,7 @@
 
                 this.params = Object.assign({}, obj);
                 this.selectArea = columns.values;
+                this.defaultArea = (isDefault === 1);
                 this.$apply();
             }
         }
@@ -194,9 +196,14 @@
 
         // 新增
         async addAddress (params) {
+            if(this.saveLoading) {
+                return ;
+            }
+            this.saveLoading = true;
             const data = await api.addAddress({
                 ...params
             });
+            this.saveLoading = false;
             if(data.code === 200) {
                 wepy.showToast({
                     title: '添加收货地址成功！',
@@ -204,21 +211,32 @@
                     duration: 2000,
                     mask: true
                 });
+                wepy.navigateBack({
+                    delta: 1
+                });
             }
         }
 
         // 编辑
         async editAddress (params) {
+            if(this.saveLoading) {
+                return ;
+            }
+            this.saveLoading = true;
             const data = await api.editAddress({
                 id: this.addressId,
                 ...params
             });
+            this.saveLoading = false;
             if(data.code === 200) {
                 wepy.showToast({
                     title: '编辑收货地址成功！',
                     icon: 'success',
                     duration: 2000,
                     mask: true
+                });
+                wepy.navigateBack({
+                    delta: 1
                 });
             }
         }
@@ -257,16 +275,9 @@
             // 保存
             async saveAddress () {
                 const selectArea = [...this.selectArea];
-                wepy.showLoading({
-                    title: '正在添加新收货地址...',
-                });
                 if(!this.dataValidate) {
                     return ;
                 }
-                if(this.saveLoading) {
-                    return ;
-                }
-                this.saveLoading = true;
                 const params = {
                     isDefault: this.defaultArea ? 1 : 0,
                     province: selectArea[0].text,
@@ -281,29 +292,45 @@
                 };
 
                 if(this.addressId) {
-                    await this.addAddress(params);
-                } else {
+                    wepy.showLoading({
+                        title: '正在修改收货地址...',
+                    });
                     await this.editAddress(params);
+                } else {
+                    wepy.showLoading({
+                        title: '正在添加新收货地址...',
+                    });
+                    await this.addAddress(params);
                 }
-                this.saveLoading = false;
                 wepy.hideLoading();
-                wepy.navigateBack({
-                    delta: 1
-                });
             },
 
-            async deleteAddress () {
-                const data = await api.deleteAddress({
-                    id: this.addressId
+            deleteAddress () {
+                wepy.showModal({
+                    title: '温馨提示',
+                    content: '确定要删除当前的收货地址吗？',
+                    cancelColor: '#ddd',
+                    confirmColor: '#1ea9f0',
+                }).then(async (res) => {
+                    if (res.confirm) {
+                        const data = await api.deleteAddress({
+                            id: this.addressId
+                        });
+                        if(data.code === 200) {
+                            wepy.showToast({
+                                title: '删除收货地址成功！',
+                                icon: 'success',
+                                duration: 2000,
+                                mask: true
+                            });
+                            wepy.navigateBack({
+                                delta: 1
+                            });
+                        }
+                    } else if (res.cancel) {
+
+                    }
                 });
-                if(data.code === 200) {
-                    wepy.showToast({
-                        title: '删除收货地址成功！',
-                        icon: 'success',
-                        duration: 2000,
-                        mask: true
-                    });
-                }
             },
 
             onConfirm (event) {
@@ -366,13 +393,6 @@
                             let codeArr = this.selectArea.map(item => {
                                 return item.code;
                             });
-                            this.columns.forEach((item, index) => {
-                                item.values.forEach((o, i) => {
-                                    if(codeArr.includes(o.code)) {
-                                        positionArr.push(i)
-                                    }
-                                })
-                            });
 
                             for (let i = index; i < (codeArr.length - 1); i++) {
                                 // 第一次打开的时候默认无code
@@ -381,8 +401,19 @@
                                 }
                                 let code = this.nextApiCode;
                                 await this.getCity(picker, code, i);
+                                // columns全部请求到数据的时候 arr length >= 4
+                                if(i === (codeArr.length - 2)) {
+                                    this.columns.forEach((item, index) => {
+                                        item.values.forEach((o, i) => {
+                                            if(codeArr.includes(o.code)) {
+                                                positionArr.push(i)
+                                            }
+                                        })
+                                    });
+                                }
                             }
                         }
+                        this.$apply();
                         setTimeout(() => {
                             picker.setValues(this.selectArea);
                             picker.setIndexes(positionArr)

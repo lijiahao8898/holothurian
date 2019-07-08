@@ -149,22 +149,42 @@
             wepy.hideLoading();
         }
 
+        // 加入购物车
         async addCart () {
-            console.log(this.buyNum);
             const data = await api.addGoodsToCart({
                 skuId: this.currentSku.id,
                 number: this.buyNum
             });
             if(data.code === 200) {
-                wx.showToast({
+                wepy.showToast({
                     title: '成功加入购物车！',
                     icon: 'none'
                 });
+                this.showPopup = false;
+                this.operateType = null;
+                this.$apply();
             }
         }
 
-        goPay () {
-
+        // 支付
+        async goPay () {
+            wepy.showLoading({
+                title: '正在创建订单'
+            });
+            wepy.setStorage({
+                key: 'orderInfo',
+                data: [{
+                    number: this.buyNum,
+                    ...this.currentSku,
+                    itemName: this.itemData.name,
+                }]
+            }).then((res) => {
+                console.log(res);
+                wepy.hideLoading();
+                wepy.navigateTo({
+                    url: `/pages/orderConfirm`
+                });
+            });
         }
 
         methods = {

@@ -1,9 +1,13 @@
 <template>
     <view>
-        <scroll-view scroll-y bindscrolltoupper="upper" id="scrollView">
-            <goods :goodsList.sync="goodsList"></goods>
-        </scroll-view>
-        <view wx:if="{{isListEnd}}">
+        <view wx:if="{{itemList.length > 0}}">
+            <orderItem :itemList.sync="itemList"></orderItem>
+        </view>
+        <view class="no-data-item" wx:else>
+            <view class="iconfont icon-No-data"></view>
+            <view>无数据</view>
+        </view>
+        <view wx:if="{{isListEnd && itemList.length > 0}}">
             <view class="footer">已经到最底部啦~</view>
         </view>
     </view>
@@ -11,30 +15,34 @@
 
 <script>
     import wepy from 'wepy';
-    import goods from '../components/goods';
+    import orderItem from '../components/orderItem/orderItem';
     import API from '@/utils/http/api';
 
     const api = new API();
 
-    export default class list extends wepy.page {
+    export default class orderLists extends wepy.page {
         config = {
             navigationBarTitleText: '订单列表',
         };
         data = {
-            height: '500px',
-            goodsList: [],
+            itemList: [],
             pager: {
                 pageNum: 1,
-                pageSize: 20
+                pageSize: 10
             },
-            isListEnd: false
+            isListEnd: false,
+            orderStatus: null,
+            total: 0
         };
         components = {
-            goods
+            orderItem
         };
 
         onShow () {
-            if(this.goodsList.length <= 0) {
+            let pages = getCurrentPages();
+            let {options} = pages.pop();
+            this.orderStatus = options.type;
+            if(this.itemList.length <= 0) {
                 this.getOrderLists();
             }
         }
@@ -44,41 +52,47 @@
                 title: '拼命加载中...',
             });
             const data = await api.getOrderLists({
+                orderStatus: this.orderStatus,
                 ...this.pager
             });
             if(data.code === 200) {
-                const rows = data.data.rows;
-                this.isListEnd = rows.length <= 0;
-                console.log(this.isListEnd);
-                if(this.goodsList.length <= 0) {
-                    this.goodsList = [...rows];
+                const {total, rows} = data.data;
+                this.total = total;
+                if(this.itemList.length <= 0) {
+                    // 第一次请求
+                    this.itemList = [...rows];
                 } else {
+                    if(this.pager.pageNum === 1) {
+                        this.itemList = [];
+                    }
                     rows.forEach(item => {
-                        this.goodsList.push(item);
+                        this.itemList.push(item);
                     });
                 }
+                // 请求
+                this.isListEnd = (rows.length <= 0 || total === this.itemList.length || rows.length < this.pager.pageSize);
                 this.$apply();
             }
             wepy.hideLoading();
         }
 
-        async onPullDownRefresh () {
-            await this.getOrderLists();
+        onPullDownRefresh () {
+            const pager = {...this.pager};
+            pager.pageNum = 1;
+            this.pager = {...pager};
+            this.getOrderLists();
             wepy.stopPullDownRefresh()
         }
 
         onReachBottom () {
-            const pager = {...this.pager};
-            pager.pageNum += 1;
-            this.pager = {...pager};
-            this.getOrderLists();
-        }
-
-        methods = {
-            upper (e) {
-                console.log(e);
+            // 最后一条数据之后就不请求了
+            if(this.total > this.itemList.length) {
+                const pager = {...this.pager};
+                pager.pageNum += 1;
+                this.pager = {...pager};
+                this.getOrderLists();
             }
-        };
+        }
     }
 </script>
 
@@ -88,8 +102,19 @@
     .footer{
         font-size: 28rpx;
         color: #999;
-        margin: 20rpx 0;
+        padding: 20px 0;
         text-align: center;
+    }
+
+    .no-data-item {
+        color: $font-dark-color;
+        text-align: center;
+    }
+
+    .icon-No-data {
+        font-size: 180rpx;
+        margin-top: 100rpx;
+        margin-bottom: 20rpx;
     }
 
 </style>

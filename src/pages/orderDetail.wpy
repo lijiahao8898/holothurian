@@ -1,15 +1,14 @@
 <template>
     <view>
         <view>
-            <view class="address-way">请选择配送方式</view>
-            <van-radio-group value="{{params.deliveryType}}" bind:change="onChangeDistributionWay">
+            <view class="address-way">配送方式</view>
+            <van-radio-group value="{{params.deliveryType}}" bind:change="onChangeDistributionWay" disabled>
                 <van-cell-group>
                     <van-cell
                         title="自提"
                         value-class="value-class"
                         clickable
                         data-name="2"
-                        bind:click="onClickDistributionWay"
                     >           <van-radio name="2" />
                     </van-cell>
                     <van-cell
@@ -17,7 +16,6 @@
                         value-class="value-class"
                         clickable
                         data-name="1"
-                        bind:click="onClickDistributionWay"
                     >
                         <van-radio name="1" />
                     </van-cell>
@@ -25,7 +23,7 @@
             </van-radio-group>
         </view>
         <view wx:if="{{params.deliveryType == 1}}">
-            <van-cell is-link bind:click="changeAddress">
+            <van-cell>
                 <view slot="title">
                     <repeat for="{{currentAddressList}}" key="item">
                         <view class="address-item">
@@ -50,7 +48,7 @@
                         <view class="goods-container-price">
                             <view class="goods-container-price__discount">{{filter.accDiv(item.skuSalePrice, 100)}}</view>
                         </view>
-                        <view class="goods-item__number">x{{item.number}}</view>
+                        <view class="goods-item__number">x{{item.skuNumber}}</view>
                     </view>
                 </view>
             </repeat>
@@ -71,7 +69,7 @@
         <view class="cart-submit">
             <van-submit-bar
                 price="{{price}}"
-                button-text="立即支付"
+                button-text="付款"
                 bind:submit="wxpay"
                 tip="{{ true }}"
                 custom-class="cart-submit__bar"
@@ -92,7 +90,7 @@
 
     export default class orderConfirm extends wepy.page {
         config = {
-            navigationBarTitleText: '确认订单',
+            navigationBarTitleText: '订单详情',
             usingComponents: {
                 'van-radio': '../components/vant-weapp/radio/index',
                 'van-radio-group': '../components/vant-weapp/radio-group/index',
@@ -103,7 +101,6 @@
             }
         };
         data = {
-            height: '500px',
             addressList: [],
             currentAddressList: [],
             goodsInfo: [],
@@ -111,7 +108,8 @@
             params: {
                 remark: '',
                 deliveryType: '1',       // 1快递，2其他
-                tradeFrom: ''
+                tradeFrom: '',
+                orderId: ''
             }
         };
         components = {
@@ -122,61 +120,41 @@
         };
 
         onShow () {
-            console.log('------------');
             let pages = getCurrentPages();
             let {options} = pages.pop();
-            console.log(pages);
-            console.log(options);
-            console.log('------------');
-            this.params.tradeFrom = Number(options.tf);
+            // 订单列表过来的
+            this.params.tradeFrom = 1;
+            this.params.orderId = options.orderId;
             this.initPage();
-            this.getGoodsStorage();
+            this.getOrderDetail();
             const addressInfo = wepy.getStorageSync('addressInfo');
             if(!addressInfo) {
                 this.getAddressList();
             } else {
                 this.currentAddressList = addressInfo;
             }
-
-            // wx.login({
-            //     success: (res) => {
-            //         console.log(res.code);
-            //         //获取openid
-            //         // that.getOpenId(res.code)}
-            //     }
-            // })
         }
-
-        // getOpenId (code) {
-        //     var that = this;
-        //     wx.request({
-        //         url: "https://api.weixin.qq.com/sns/jscode2session?appid=小程序appid&secret=小程序应用密钥&js_code=" + code + "&grant_type=authorization_code",
-        //         data: {},
-        //         method: 'GET',
-        //         success: function (res) {
-        //             that.generateOrder(res.data.openid)
-        //         },
-        //         fail: function () {
-        //             // fail
-        //         },
-        //         complete: function () {
-        //             // complete
-        //         }
-        //     })
-        // }
 
         initPage () {
             this.price = 0;
             this.$apply();
         }
 
-        getGoodsStorage () {
-            this.goodsInfo = wepy.getStorageSync('orderInfo');
-            console.log(this.goodsInfo);
-            const goodsInfo = [...this.goodsInfo];
-            goodsInfo.forEach(item => {
-                this.price += (item.number * item.skuSalePrice);
-            })
+        async getOrderDetail () {
+            const res = await api.getOrderDetail({
+                orderId: this.params.orderId
+            });
+            if(res.code === 200) {
+                const goodsInfo = [...res.data.orderSkuDTOList];
+                const {remark, deliveryType} = res.data;
+                this.params.remark = remark;
+                this.params.deliveryType = deliveryType.toString();
+                this.goodsInfo = [...goodsInfo];
+                goodsInfo.forEach(item => {
+                    this.price += (item.skuNumber * item.skuSalePrice);
+                })
+                this.$apply();
+            }
         }
 
         async onPullDownRefresh () {
@@ -209,12 +187,6 @@
             goGoodsDetail (id) {
                 wepy.navigateTo({
                     url: `/pages/goodsDetail?goodsId=${id}`
-                });
-            },
-
-            changeAddress () {
-                wepy.navigateTo({
-                    url: `/pages/address/addressSelect`
                 });
             },
 
@@ -256,13 +228,6 @@
 
             onChangeDistributionWay (event) {
                 this.params.deliveryType = event.detail;
-            },
-
-            onClickDistributionWay(event) {
-                const {name} = event.currentTarget.dataset;
-                console.log(name);
-                this.params.deliveryType = name;
-                this.$apply();
             }
         }
     }

@@ -169,7 +169,7 @@ class API extends HTTP {
         })
     }
 
-    // 订单
+    // 创建订单
     createOrders (params) {
         return this.request({
             url: 'orders',
@@ -180,11 +180,33 @@ class API extends HTTP {
         })
     }
 
-    // 订单
+    // 订单列表
     getOrderLists (params) {
         return this.request({
-            url: 'orders/list',
+            url: 'orders/search',
             method: 'post',
+            data: {
+                ...params
+            }
+        })
+    }
+
+    // 获取用户信息
+    getUserData (params) {
+        return this.request({
+            url: 'user',
+            method: 'get',
+            data: {
+                ...params
+            }
+        })
+    }
+
+    // 订单详情
+    getOrderDetail (params) {
+        return this.request({
+            url: `orders/${params.orderId}`,
+            method: 'get',
             data: {
                 ...params
             }

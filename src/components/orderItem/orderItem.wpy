@@ -1,0 +1,185 @@
+<template>
+    <repeat for="{{itemList}}" key="item.id">
+        <view class="goods-item" @tap="goOrderDetail({{item.id}})">
+            <repeat for="{{item.orderSkuDTOList}}" key="i.id" item="i" key="n">
+                <view class="goods-item-content">
+                    <image lazy-load class="goods-item__image" mode="aspectFill" src="{{i.imgUrl || i.skuImgUrl}}"
+                           @tap.stop="goGoodsDetail({{i.itemId}})"></image>
+                    <view class="goods-container">
+                        <view class="goods-container__name">{{i.itemName}}</view>
+                        <view class="goods-container__sku">{{i.skuAttr}}</view>
+                        <view class="goods-container-price">
+                            <view class="goods-container-price__discount">{{filter.accDiv(i.skuSalePrice, 100)}}</view>
+                        </view>
+                        <view class="goods-item__number">x {{i.skuNumber}}</view>
+                    </view>
+                </view>
+            </repeat>
+            <view class="goods-item-footer">
+                <view class="goods-item-footer__remark">备注：{{item.remark || ''}}</view>
+                <view class="goods-item-footer__btn" @tap.stop="goPay">
+                    <button class="btn-pay" type="primary" size="mini">付款</button>
+                </view>
+            </view>
+        </view>
+    </repeat>
+</template>
+<script>
+    import wepy from 'wepy';
+    import filter from '../../utils/filter/index.wxs'
+
+    export default class OrderItem extends wepy.component {
+        props = {
+            itemList: Array
+        };
+
+        wxs = {
+            filter
+        };
+
+        methods = {
+            goGoodsDetail (id) {
+                wepy.navigateTo({
+                    url: `/pages/goodsDetail?goodsId=${id}`
+                });
+            },
+            goOrderDetail (id) {
+                wepy.navigateTo({
+                    url: `/pages/orderDetail?orderId=${id}`
+                });
+            },
+            goPay () {
+
+            }
+        }
+    }
+</script>
+<style type="text/scss" lang="scss" scoped>
+    @import "../../assets/config";
+    .btn {
+        &-pay {
+            background: $primary-color;
+            color: $white;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    }
+    .goods {
+
+        &-item {
+            background: $white;
+            margin: 5px 8px;
+            padding: 5px;
+            position: relative;
+            border-radius: 8px;
+
+            &-content {
+                overflow: hidden;
+                margin-bottom: 5px;
+            }
+
+            &-footer{
+                &__remark {
+                    color: $font-light-color;
+                    font-size: 12px;
+                    margin-bottom: 5px;
+                }
+                &__btn {
+                    text-align: right;
+                }
+            }
+
+            &__close {
+                background: $primary-color-red;
+                color: $white;
+                height: inherit;
+                width: 65px;
+                line-height: 120px;
+                font-size: 12px;
+                text-align: center;
+            }
+
+            &__image {
+                width: 160rpx;
+                height: 160rpx;
+                float: left;
+            }
+
+            &__number {
+                position: absolute;
+                right: 0;
+                top: 96rpx;
+                font-size: 12px;
+                color: $font-dark-color;
+            }
+        }
+
+        &-submit {
+            position: fixed;
+            bottom: 0;
+
+            &__bar {
+                z-index: 256;
+            }
+
+            &__button {
+                background-color: $primary-color;
+            }
+        }
+
+        &-container {
+            float: left;
+            margin: 10px 0 0 10px;
+            position: relative;
+
+            &__name {
+                font-size: 12px;
+                color: $font-dark-color;
+                max-width: 480rpx;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            &__sku {
+                font-size: 12px;
+                color: $font-light-color;
+                max-width: 400rpx;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-top: 4px;
+            }
+
+            &-price {
+                font-size: 12px;
+                text-align: left;
+                color: red;
+                padding: 0 4px;
+                margin-top: 10px;
+
+                &__discount {
+                    display: inline-block;
+                    position: relative;
+                    margin: 0 0 0 10px;
+                    font-size: 14px;
+
+                    &:before {
+                        content: '￥';
+                        font-size: 14px;
+                        position: absolute;
+                        left: -15px;
+                        top: 0;
+                    }
+                }
+            }
+
+            &__stepper {
+                position: absolute;
+                bottom: 5px;
+                right: 0;
+                z-index: 0;
+            }
+        }
+    }
+</style>

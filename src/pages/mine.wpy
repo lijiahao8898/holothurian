@@ -8,21 +8,30 @@
         </view>
         <view class="order mine-item">
             <view>我的订单</view>
-            <view class="mine-icon">
-                <van-icon name="arrow"/>
-            </view>
+<!--            <view class="mine-icon">-->
+<!--                <van-icon name="arrow-down"/>-->
+<!--            </view>-->
         </view>
         <view class="order-detail">
-            <view class="order-detail__item" @tap="goOrderList(1)">
+            <view class="order-detail__item" @tap="goOrderList(0)">
                 <view class="iconfont icon-daifukuan2-copy"></view>
+                <view class="order-detail__tag" wx:if="{{userData.waitPayNum > 0}}">
+                    <van-tag type="primary">{{userData.waitPayNum}}</van-tag>
+                </view>
                 待付款
             </view>
-            <view class="order-detail__item">
+            <view class="order-detail__item" @tap="goOrderList(1)">
                 <view class="iconfont icon-fahuotixing"></view>
+                <view class="order-detail__tag" wx:if="{{userData.waitExpressNum > 0}}">
+                    <van-tag type="primary">{{userData.waitExpressNum}}</van-tag>
+                </view>
                 待发货
             </view>
-            <view class="order-detail__item">
+            <view class="order-detail__item" @tap="goOrderList(2)">
                 <view class="iconfont icon-daishouhuo"></view>
+                <view class="order-detail__tag" wx:if="{{userData.waitConfirmNum > 0}}">
+                    <van-tag type="primary">{{userData.waitConfirmNum}}</van-tag>
+                </view>
                 待收货
             </view>
         </view>
@@ -37,33 +46,48 @@
 
 <script>
     import wepy from 'wepy';
+    import API from '@/utils/http/api';
+
+    const api = new API();
 
     export default class Mine extends wepy.page {
         config = {
             navigationBarTitleText: '我的',
             "usingComponents": {
                 'van-icon': '../components/vant-weapp/icon/index',
+                'van-tag': '../components/vant-weapp/tag/index',
             }
         };
 
         data = {
-            userInfo: {}
+            userInfo: {},           // 小程序获取的
+            userData: {}            // 接口获取的
         };
 
         onLoad () {
-           console.log(1);
            this.$parent.getUserInfo((userInfo) => {
                if (userInfo) {
                    this.userInfo = userInfo;
-                   console.log(this.userInfo);
                }
                this.$apply();
            });
         }
 
+        onShow () {
+            this.getUserData();
+        }
 
         async onPullDownRefresh () {
+            this.getUserData();
             wepy.stopPullDownRefresh()
+        }
+
+        async getUserData () {
+            const data = await api.getUserData();
+            if(data.code === 200) {
+                this.userData = data.data;
+                this.$apply();
+            }
         }
 
         methods = {
@@ -74,7 +98,6 @@
             },
 
             goOrderList (type) {
-                console.log(type);
                 wepy.navigateTo({
                     url: `/pages/orderLists?type=${type}`
                 });
@@ -102,7 +125,7 @@
     }
 
     .user{
-        margin: 10px;
+        margin: 5px;
         padding: 10px;
         background-color: $primary-color;
         border-radius: 10px 10px 0 0;
@@ -111,7 +134,7 @@
             height: 120rpx;
             border-radius: 100%;
             display: inline-block;
-            margin-right: 20px;
+            margin-right: 40rpx;
             &-image {
                 width: inherit;
                 height: inherit;
@@ -123,7 +146,7 @@
             color: $white;
             font-size: 24rpx;
             vertical-align: top;
-            margin-top: 20px;
+            margin-top: 40rpx;
             max-width: 280rpx;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -142,10 +165,20 @@
             background: $white;
             text-align: center;
             &__item{
-                width: 25%;
+                width: 20%;
                 font-size: 24rpx;
                 padding: 10rpx;
                 color: $font-dark-color;
+                position: relative;
+                .iconfont{
+                    color: $primary-color;
+                }
+            }
+            &__tag{
+                position: absolute;
+                top: 4rpx;
+                right: 40rpx;
+                font-size: 24rpx;
             }
         }
     }

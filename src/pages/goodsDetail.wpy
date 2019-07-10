@@ -42,14 +42,31 @@
             </van-popup>
         </view>
 
-
-<!--        <button class="share_quan" @tap="share_quan">分享朋友圈</button>-->
-<!--        &lt;!&ndash; 画布 &ndash;&gt;-->
-<!--        <canvas  canvas-id="shareImg" style="width:600px;height:800px;"></canvas>-->
-<!--        <view hidden='{{true}}'>-->
-<!--            <image src='{{imgList[0]}}'></image>-->
-<!--            <button  @tap='save'>保存图片到相册</button>-->
-<!--        </view>-->
+        <view class="share-popup">
+            <van-popup show="{{showPopupShare}}" position="bottom"
+                       bind:click-overlay="onCloseHandle">
+                <view class="sku">
+                    <image lazy-load class="sku-image" mode="aspectFill" src="{{currentSku.imgUrl}}" alt="{{currentSku.skuAttr}}"></image>
+                    <view class="sku-price">
+                        <view class="sku-price__discount">{{filter.accDiv(currentSku.skuSalePrice, 100)}}</view>
+                        <view class="sku-price__old">{{filter.accDiv(currentSku.skuMarketPrice, 100)}}</view>
+                    </view>
+                    <view class="sku-wrapper">
+                        <view class="sku-tip">型号规格：</view>
+                        <repeat for="{{itemData.itemSkuDTOList}}" key="item.id">
+                            <view
+                                class="{{item.id === currentSku.id ? 'sku-item active' : 'sku-item'}}"
+                                @tap="changeCurrentSku({{item.id}})">{{item.skuAttr}}</view>
+                        </repeat>
+                    </view>
+                    <view class="sku-wrapper">
+                        <view class="sku-tip">购买数量：</view>
+                        <van-stepper value="{{buyNum}}" bind:change="onChangeNumberHandle" integer/>
+                    </view>
+                    <button class="sku-confirm-btn" type="primary" @tap="confirm">确定</button>
+                </view>
+            </van-popup>
+        </view>
 
         <view class="bottom-bar">
             <van-goods-action>
@@ -74,7 +91,6 @@
                 />
             </van-goods-action>
         </view>
-
 
     </view>
 </template>
@@ -109,7 +125,8 @@
             imgList: [],                // 轮播图
             itemData: {},               // 商品详情
             swiperType: 2,              // 轮播图类型 1 首页 2 商品详情
-            showPopup: false,           // 展示SKU弹框
+            showPopup: false,           // 展示 - SKU弹框
+            showPopupShare: false,      // 展示 - 分享组件
             currentSku: [],             // 当前选中的SKU
             buyNum: 1,                  // 选择的数量
             goodsId: null,

@@ -1,0 +1,95 @@
+<template>
+    <view>
+        <scroll-view scroll-y bindscrolltoupper="upper" id="scrollView">
+            <goods :goodsList.sync="goodsList"></goods>
+        </scroll-view>
+        <view wx:if="{{isListEnd}}">
+            <view class="footer">已经到最底部啦~</view>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import goods from '../components/goods';
+    import API from '@/utils/http/api';
+
+    const api = new API();
+
+    export default class list extends wepy.page {
+        config = {
+            navigationBarTitleText: '订单列表',
+        };
+        data = {
+            height: '500px',
+            goodsList: [],
+            pager: {
+                pageNum: 1,
+                pageSize: 20
+            },
+            isListEnd: false
+        };
+        components = {
+            goods
+        };
+
+        onShow () {
+            if(this.goodsList.length <= 0) {
+                this.getOrderLists();
+            }
+        }
+
+        async getOrderLists () {
+            wepy.showLoading({
+                title: '拼命加载中...',
+            });
+            const data = await api.getOrderLists({
+                ...this.pager
+            });
+            if(data.code === 200) {
+                const rows = data.data.rows;
+                this.isListEnd = rows.length <= 0;
+                console.log(this.isListEnd);
+                if(this.goodsList.length <= 0) {
+                    this.goodsList = [...rows];
+                } else {
+                    rows.forEach(item => {
+                        this.goodsList.push(item);
+                    });
+                }
+                this.$apply();
+            }
+            wepy.hideLoading();
+        }
+
+        async onPullDownRefresh () {
+            await this.getOrderLists();
+            wepy.stopPullDownRefresh()
+        }
+
+        onReachBottom () {
+            const pager = {...this.pager};
+            pager.pageNum += 1;
+            this.pager = {...pager};
+            this.getOrderLists();
+        }
+
+        methods = {
+            upper (e) {
+                console.log(e);
+            }
+        };
+    }
+</script>
+
+<style lang="scss" type="text/scss">
+    @import "../../src/assets/config";
+
+    .footer{
+        font-size: 28rpx;
+        color: #999;
+        margin: 20rpx 0;
+        text-align: center;
+    }
+
+</style>

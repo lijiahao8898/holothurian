@@ -1,15 +1,43 @@
 <template>
     <view>
         <view>
-            <repeat for="{{addressList}}" key="item">
-                <view class="address-item" @tap="reselectAddress">
-                    <view>
-                        {{item.userName}}
-                        <text class="address-item__phone">{{item.phone}}</text>
-                    </view>
-                    <view>{{item.province}}{{item.city}}{{item.area}}{{item.street}}{{item.detailAddress}}</view>
+            <view class="address-way">请选择配送方式</view>
+            <van-radio-group value="{{params.deliveryType}}" bind:change="onChangeDistributionWay">
+                <van-cell-group>
+                    <van-cell
+                        title="自提"
+                        value-class="value-class"
+                        clickable
+                        data-name="2"
+                        bind:click="onClickDistributionWay"
+                    >           <van-radio name="2" />
+                    </van-cell>
+                    <van-cell
+                        title="快递"
+                        value-class="value-class"
+                        clickable
+                        data-name="1"
+                        bind:click="onClickDistributionWay"
+                    >
+                        <van-radio name="1" />
+                    </van-cell>
+                </van-cell-group>
+            </van-radio-group>
+        </view>
+        <view wx:if="{{params.deliveryType == 1}}">
+            <van-cell is-link bind:click="changeAddress">
+                <view slot="title">
+                    <repeat for="{{currentAddressList}}" key="item">
+                        <view class="address-item">
+                            <view>
+                                {{item.userName}}
+                                <text class="address-item__phone">{{item.phone}}</text>
+                            </view>
+                            <view>{{item.province}}{{item.city}}{{item.area}}{{item.street}}{{item.detailAddress}}</view>
+                        </view>
+                    </repeat>
                 </view>
-            </repeat>
+            </van-cell>
         </view>
         <view>
             <repeat for="{{goodsInfo}}" key="item.id">
@@ -27,6 +55,30 @@
                 </view>
             </repeat>
         </view>
+        <view>
+            <van-cell-group>
+                <van-field
+                    value="{{ params.remark }}"
+                    label="备注"
+                    type="textarea"
+                    placeholder="请输入备注"
+                    autosize
+                    bind:change="changeRemark"
+                    border="{{ false }}"
+                />
+            </van-cell-group>
+        </view>
+        <view class="cart-submit">
+            <van-submit-bar
+                price="{{price}}"
+                button-text="立即支付"
+                bind:submit="wxpay"
+                tip="{{ true }}"
+                custom-class="cart-submit__bar"
+                button-class="cart-submit__button"
+            >
+            </van-submit-bar>
+        </view>
     </view>
 </template>
 
@@ -41,12 +93,26 @@
     export default class orderConfirm extends wepy.page {
         config = {
             navigationBarTitleText: '确认订单',
+            usingComponents: {
+                'van-radio': '../components/vant-weapp/radio/index',
+                'van-radio-group': '../components/vant-weapp/radio-group/index',
+                "van-submit-bar": "../components/vant-weapp/submit-bar/index",
+                'van-cell': '../../components/vant-weapp/cell/index',
+                'van-cell-group': '../../components/vant-weapp/cell-group/index',
+                'van-field': '../../components/vant-weapp/field/index',
+            }
         };
         data = {
             height: '500px',
             addressList: [],
-            currentAddressList: null,
-            goodsInfo: []
+            currentAddressList: [],
+            goodsInfo: [],
+            price: 0,
+            params: {
+                remark: '',
+                deliveryType: '1',       // 1快递，2其他
+                tradeFrom: ''
+            }
         };
         components = {
             goods
@@ -56,27 +122,80 @@
         };
 
         onShow () {
+            console.log('------------');
+            let pages = getCurrentPages();
+            let {options} = pages.pop();
+            console.log(pages);
+            console.log(options);
+            console.log('------------');
+            this.params.tradeFrom = options.tf;
+            this.initPage();
             this.getGoodsStorage();
-            this.getAddressList();
+            const addressInfo = wepy.getStorageSync('addressInfo');
+            if(!addressInfo) {
+                this.getAddressList();
+            } else {
+                this.currentAddressList = addressInfo;
+            }
+
+            // wx.login({
+            //     success: (res) => {
+            //         console.log(res.code);
+            //         //获取openid
+            //         // that.getOpenId(res.code)}
+            //     }
+            // })
+        }
+
+        // getOpenId (code) {
+        //     var that = this;
+        //     wx.request({
+        //         url: "https://api.weixin.qq.com/sns/jscode2session?appid=小程序appid&secret=小程序应用密钥&js_code=" + code + "&grant_type=authorization_code",
+        //         data: {},
+        //         method: 'GET',
+        //         success: function (res) {
+        //             that.generateOrder(res.data.openid)
+        //         },
+        //         fail: function () {
+        //             // fail
+        //         },
+        //         complete: function () {
+        //             // complete
+        //         }
+        //     })
+        // }
+
+        initPage () {
+            this.price = 0;
+            this.$apply();
         }
 
         getGoodsStorage () {
             this.goodsInfo = wepy.getStorageSync('orderInfo');
             console.log(this.goodsInfo);
+            const goodsInfo = [...this.goodsInfo];
+            goodsInfo.forEach(item => {
+                this.price += (item.number * item.skuSalePrice);
+            })
         }
 
         async onPullDownRefresh () {
             wepy.stopPullDownRefresh();
         }
 
+        // 没有的话用address默认的
         async getAddressList () {
             const data = await api.getAddressList();
             if (data.code === 200) {
                 this.addressList = [...data.data];
-                this.currentAddressList = this.addressList.map(item => {
+                this.addressList.forEach(item => {
                     if (item.isDefault) {
-                        return item;
+                        this.currentAddressList.push(item);
                     }
+                });
+                wepy.setStorage({
+                    key: 'addressInfo',
+                    data: this.currentAddressList,
                 });
                 this.$apply();
             }
@@ -93,10 +212,59 @@
                 });
             },
 
-            reselectAddress () {
-                // todo 重新选择收货地址
+            changeAddress () {
+                wepy.navigateTo({
+                    url: `/pages/address/addressSelect`
+                });
+            },
+
+            async wxpay () {
+                console.log(this.goodsInfo);
+                const orderSkuDTOList = this.goodsInfo.map((item) => {
+                    return {
+                        skuId: item.id,
+                        skuNumber: item.number
+                    }
+                });
+                const data = await api.createOrders({
+                    orderSkuDTOList: orderSkuDTOList,
+                    recipientAddressId: this.currentAddressList[0].id,
+                    ...this.params
+                });
+                if(data.code === 200) {
+                    console.log(data);
+                    wepy.showModal({
+                        title: '温馨提示',
+                        content: '您当前购买的订单ID' + data.data,
+                        cancelColor: '#ddd',
+                        confirmColor: '#1ea9f0',
+                    }).then((res) => {
+                        if (res.confirm) {
+                            wepy.navigateBack({
+                                delta: 1
+                            });
+                        } else if (res.cancel) {
+
+                        }
+                    });
+                }
+            },
+
+            changeRemark (event) {
+                this.params.remark = event.detail
+            },
+
+            onChangeDistributionWay (event) {
+                this.params.deliveryType = event.detail;
+            },
+
+            onClickDistributionWay(event) {
+                const {name} = event.currentTarget.dataset;
+                console.log(name);
+                this.params.deliveryType = name;
+                this.$apply();
             }
-        };
+        }
     }
 </script>
 
@@ -109,19 +277,16 @@
             color: $font-dark-color;
             background: $white;
             padding: 5px;
-            margin: 5px;
             line-height: 20px;
-            border-radius: 4px;
             position: relative;
             &__phone {
                 margin-left: 10px;
             }
-            &__edit {
-                font-size: 12px;
-                position: absolute;
-                right: 10px;
-                top: 15px;
-            }
+        }
+        &-way{
+            color: $font-light-color;
+            font-size: 14px;
+            margin: 10px 0 5px 10px;
         }
     }
 
@@ -147,8 +312,8 @@
             }
 
             &__image {
-                width: 100px;
-                height: 100px;
+                width: 80px;
+                height: 80px;
                 margin: 5px;
                 float: left;
             }
@@ -231,4 +396,40 @@
             }
         }
     }
+
+    .cart {
+        &-submit {
+            position: fixed;
+            bottom: 0;
+            &__checkbox {
+                margin-left: 15px;
+            }
+            &__bar {
+                z-index: 256;
+            }
+            &__button {
+                background-color: $primary-color;
+            }
+        }
+    }
 </style>
+
+<style type="text/scss" lang="scss">
+    @import "../../src/assets/config";
+    .cart {
+        &-submit {
+            &__bar {
+                z-index: 10999!important;
+            }
+            &__button {
+                background-color: $primary-color!important;
+                border: 1px solid $primary-color!important;
+            }
+        }
+    }
+
+    .value-class {
+        flex: none !important;
+    }
+</style>
+

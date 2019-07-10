@@ -179,6 +179,17 @@ class API extends HTTP {
             }
         })
     }
+
+    // 订单
+    getOrderLists (params) {
+        return this.request({
+            url: 'orders/list',
+            method: 'post',
+            data: {
+                ...params
+            }
+        })
+    }
 }
 
 export default API;

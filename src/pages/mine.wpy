@@ -13,7 +13,7 @@
             </view>
         </view>
         <view class="order-detail">
-            <view class="order-detail__item">
+            <view class="order-detail__item" @tap="goOrderList(1)">
                 <view class="iconfont icon-daifukuan2-copy"></view>
                 待付款
             </view>
@@ -70,6 +70,13 @@
             goAddressList () {
                 wepy.navigateTo({
                     url: `/pages/address/address`
+                });
+            },
+
+            goOrderList (type) {
+                console.log(type);
+                wepy.navigateTo({
+                    url: `/pages/orderLists?type=${type}`
                 });
             }
         }

@@ -42,6 +42,15 @@
             </van-popup>
         </view>
 
+
+<!--        <button class="share_quan" @tap="share_quan">分享朋友圈</button>-->
+<!--        &lt;!&ndash; 画布 &ndash;&gt;-->
+<!--        <canvas  canvas-id="shareImg" style="width:600px;height:800px;"></canvas>-->
+<!--        <view hidden='{{true}}'>-->
+<!--            <image src='{{imgList[0]}}'></image>-->
+<!--            <button  @tap='save'>保存图片到相册</button>-->
+<!--        </view>-->
+
         <view class="bottom-bar">
             <van-goods-action>
                 <van-goods-action-icon
@@ -97,13 +106,15 @@
         };
 
         data = {
-            imgList: [],
-            itemData: {},
-            swiperType: 2,
-            showPopup: false,
-            currentSku: [],
-            buyNum: 1,
-            operateType: null           // 1 加入购物车 2 下单
+            imgList: [],                // 轮播图
+            itemData: {},               // 商品详情
+            swiperType: 2,              // 轮播图类型 1 首页 2 商品详情
+            showPopup: false,           // 展示SKU弹框
+            currentSku: [],             // 当前选中的SKU
+            buyNum: 1,                  // 选择的数量
+            goodsId: null,
+            operateType: null,          // 1 加入购物车 2 下单
+            downLoadImage: ''
 
         };
         components = {
@@ -115,12 +126,22 @@
             let pages = getCurrentPages();
             let {options} = pages.pop();
             if(options.goodsId) {
+                this.goodsId = options.goodsId;
                 this.getGoodsDetail(options);
             } else {
                 wx.showToast({
                     title: '获取商品数据异常',
                     icon: 'none'
                 });
+            }
+        }
+
+        // 转发
+        onShareAppMessage () {
+            return {
+                title: this.itemData.name,
+                path: `/pages/goodsDetail?goodsId=${this.goodsId}`,
+                imageUrl: this.imgList[0]
             }
         }
 
@@ -145,6 +166,16 @@
                 this.itemData = rows;
                 this.currentSku = rows.itemSkuDTOList[0];
                 this.$apply();
+                //
+                // // 下载图片
+                // const that = this;
+                // wepy.downloadFile({
+                //     url: rows.itemCarousel[0],
+                //     success: function (res) {
+                //         console.log('我是下载的图片：' + res.tempFilePath);
+                //         that.downLoadImage = res.tempFilePath
+                //     }
+                // })
             }
             wepy.hideLoading();
         }
@@ -182,7 +213,7 @@
                 console.log(res);
                 wepy.hideLoading();
                 wepy.navigateTo({
-                    url: `/pages/orderConfirm`
+                    url: `/pages/orderConfirm?tf=2`
                 });
             });
         }
@@ -231,6 +262,14 @@
                     this.goPay();
                 }
             },
+
+            save () {
+
+            },
+
+            share_quan () {
+
+            }
         };
     }
 </script>

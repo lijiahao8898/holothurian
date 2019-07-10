@@ -19,7 +19,9 @@
                 'pages/goodsDetail',
                 'pages/address/address',
                 'pages/address/addressAdd',
-                'pages/orderConfirm'
+                'pages/address/addressSelect',
+                'pages/orderConfirm',
+                'pages/orderLists'
             ],
             window: {
                 backgroundTextStyle: 'light',
@@ -27,7 +29,8 @@
                 navigationBarTitleText: '健锋岛海参',
                 navigationBarTextStyle: 'white',
                 enablePullDownRefresh: true,
-                onReachBottomDistance: 10
+                onReachBottomDistance: 20,
+                backgroundColor: '#f2f8f9'
             },
             tabBar: {
                 color: '#c7cdce',
@@ -55,13 +58,16 @@
                     selectedIconPath: 'images/mine_a.png'
                 }]
             },
+            debug: true
         };
 
         globalData = {
             userInfo: null,
             appLogo: '../images/logo.jpeg',
             appName: '健锋岛海参',
-            appDesc: '长岛县优质海参，来自北纬39°，国家品牌注册商标产品。'
+            appDesc: '长岛县优质海参，来自北纬39°，国家品牌注册商标产品。',
+            appId: '',
+            appSecret: ''
         };
 
         constructor () {
@@ -80,12 +86,12 @@
                 },
                 success (p) {
                     // 可以在这里对收到的响应数据对象进行加工处理
-                    console.log('request success: ', p);
+                    // console.log('request success: ', p);
                     // 必须返回响应数据对象，否则后续无法对响应数据进行处理
                     return p;
                 },
                 fail (p) {
-                    console.log('request fail: ', p);
+                    // console.log('request fail: ', p);
                     // 必须返回响应数据对象，否则后续无法对响应数据进行处理
                     return p;
                 },
@@ -96,6 +102,7 @@
         onLaunch () {
             console.log(wepy);
             console.log(wepy.getUpdateManager);
+            this.getUserSystemInfo();
             this.getAndDownloadNewVersion();
         }
 
@@ -131,6 +138,19 @@
                 const value = wx.getStorageSync('userInfo');
                 cb && cb(value);
             }
+        }
+
+        getUserSystemInfo () {
+            const info = JSON.stringify(wepy.getSystemInfoSync());
+            wepy.showModal({
+                title: '系统信息提示',
+                content: info,
+                success(res) {
+                    if (res.confirm) {
+
+                    }
+                }
+            });
         }
     }
 </script>

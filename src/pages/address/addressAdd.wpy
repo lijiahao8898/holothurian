@@ -275,9 +275,10 @@
             // 保存
             async saveAddress () {
                 const selectArea = [...this.selectArea];
-                if(!this.dataValidate) {
+                if(!this.dataValidate()) {
                     return ;
                 }
+                console.log('dataValidate');
                 const params = {
                     isDefault: this.defaultArea ? 1 : 0,
                     province: selectArea[0].text,
@@ -358,9 +359,6 @@
             onCancel () {
                 this.showPopup = false;
                 this.nextApiCode = null;
-                if(!this.addressId) {
-                    this.selectArea = [];
-                }
             },
 
             // 打开地区选中组件
@@ -386,39 +384,43 @@
                         values: [...columns]
                     });
 
-                    if (this.addressId) {
-                        // 编辑
-                        if (this.selectArea) {
-                            let index = 0;
-                            let codeArr = this.selectArea.map(item => {
-                                return item.code;
-                            });
+                    let index = 0;
+                    let codeArr = [];
+                    if(this.selectArea.length > 0) {
+                        codeArr = this.selectArea.map(item => {
+                            return item.code;
+                        });
+                    } else {
+                        codeArr = [0, 1, 101, 10101]
+                    }
 
-                            for (let i = index; i < (codeArr.length - 1); i++) {
-                                // 第一次打开的时候默认无code
-                                if(!this.nextApiCode) {
-                                    this.nextApiCode = this.selectArea[0].code;
-                                }
-                                let code = this.nextApiCode;
-                                await this.getCity(picker, code, i);
-                                // columns全部请求到数据的时候 arr length >= 4
-                                if(i === (codeArr.length - 2)) {
-                                    this.columns.forEach((item, index) => {
-                                        item.values.forEach((o, i) => {
-                                            if(codeArr.includes(o.code)) {
-                                                positionArr.push(i)
-                                            }
-                                        })
-                                    });
-                                }
+                    for (let i = index; i < (codeArr.length - 1); i++) {
+                        // 第一次打开的时候默认无code
+                        if(!this.nextApiCode) {
+                            if(this.selectArea.length > 0) {
+                                this.nextApiCode = this.selectArea[0].code;
+                            }else {
+                                this.nextApiCode = codeArr[1]
                             }
                         }
-                        this.$apply();
-                        setTimeout(() => {
-                            picker.setValues(this.selectArea);
-                            picker.setIndexes(positionArr)
-                        }, 100);
+                        let code = this.nextApiCode;
+                        await this.getCity(picker, code, i);
+                        // columns全部请求到数据的时候 arr length >= 4
+                        if(i === (codeArr.length - 2)) {
+                            this.columns.forEach((item, index) => {
+                                item.values.forEach((o, i) => {
+                                    if(codeArr.includes(o.code)) {
+                                        positionArr.push(i)
+                                    }
+                                })
+                            });
+                        }
                     }
+                    this.$apply();
+                    setTimeout(() => {
+                        picker.setValues(this.selectArea);
+                        picker.setIndexes(positionArr)
+                    }, 100);
                     this.$apply();
                 }
             },

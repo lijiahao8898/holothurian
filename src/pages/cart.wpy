@@ -203,7 +203,7 @@
                     console.log(res);
                     wepy.hideLoading();
                     wepy.navigateTo({
-                        url: `/pages/orderConfirm`
+                        url: `/pages/orderConfirm?tf=1`
                     });
                 });
             },

@@ -250,7 +250,7 @@
 
     .no-item {
         font-size: 14px;
-        color: $font-dark-color;
+        color: $font-color-dark;
         text-align: center;
         margin-top: 50px;
     }
@@ -261,7 +261,7 @@
         }
         &-item {
             background: $white;
-            margin: 5px;
+            margin: 2px 5px;
             position: relative;
             overflow: hidden;
             &__close {
@@ -310,7 +310,7 @@
 
             &__name {
                 font-size: 12px;
-                color: $font-dark-color;
+                color: $font-color-dark;
                 max-width: 200px;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -319,7 +319,7 @@
 
             &__sku {
                 font-size: 12px;
-                color: $font-light-color;
+                color: $font-color-light;
                 max-width: 200px;
                 overflow: hidden;
                 text-overflow: ellipsis;

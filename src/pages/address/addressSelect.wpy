@@ -108,7 +108,7 @@
         }
         &-item{
             font-size: 12px;
-            color: $font-dark-color;
+            color: $font-color-dark;
             background: $white;
             padding: 5px;
             margin: 5px;

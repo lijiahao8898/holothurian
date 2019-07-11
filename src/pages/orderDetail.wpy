@@ -101,7 +101,6 @@
             }
         };
         data = {
-            addressList: [],
             currentAddressList: [],
             goodsInfo: [],
             price: 0,
@@ -127,12 +126,6 @@
             this.params.orderId = options.orderId;
             this.initPage();
             this.getOrderDetail();
-            const addressInfo = wepy.getStorageSync('addressInfo');
-            if(!addressInfo) {
-                this.getAddressList();
-            } else {
-                this.currentAddressList = addressInfo;
-            }
         }
 
         initPage () {
@@ -145,38 +138,27 @@
                 orderId: this.params.orderId
             });
             if(res.code === 200) {
-                const goodsInfo = [...res.data.orderSkuDTOList];
-                const {remark, deliveryType} = res.data;
+                const {
+                    remark,
+                    deliveryType,
+                    recipientAddressDTO,
+                    orderSkuDTOList
+                } = res.data;
                 this.params.remark = remark;
                 this.params.deliveryType = deliveryType.toString();
-                this.goodsInfo = [...goodsInfo];
+                this.goodsInfo = [...orderSkuDTOList];
+                this.currentAddressList = [recipientAddressDTO];
+
                 goodsInfo.forEach(item => {
                     this.price += (item.skuNumber * item.skuSalePrice);
-                })
+                });
+
                 this.$apply();
             }
         }
 
         async onPullDownRefresh () {
             wepy.stopPullDownRefresh();
-        }
-
-        // 没有的话用address默认的
-        async getAddressList () {
-            const data = await api.getAddressList();
-            if (data.code === 200) {
-                this.addressList = [...data.data];
-                this.addressList.forEach(item => {
-                    if (item.isDefault) {
-                        this.currentAddressList.push(item);
-                    }
-                });
-                wepy.setStorage({
-                    key: 'addressInfo',
-                    data: this.currentAddressList,
-                });
-                this.$apply();
-            }
         }
 
         methods = {
@@ -239,7 +221,7 @@
     .address {
         &-item{
             font-size: 12px;
-            color: $font-dark-color;
+            color: $font-color-dark;
             background: $white;
             padding: 5px;
             line-height: 20px;
@@ -249,7 +231,7 @@
             }
         }
         &-way{
-            color: $font-light-color;
+            color: $font-color-light;
             font-size: 14px;
             margin: 10px 0 5px 10px;
         }
@@ -288,7 +270,7 @@
                 right: 0;
                 top: 98rpx;
                 font-size: 12px;
-                color: $font-dark-color;
+                color: $font-color-dark;
             }
         }
 
@@ -312,7 +294,7 @@
 
             &__name {
                 font-size: 12px;
-                color: $font-dark-color;
+                color: $font-color-dark;
                 max-width: 500rpx;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -321,7 +303,7 @@
 
             &__sku {
                 font-size: 12px;
-                color: $font-light-color;
+                color: $font-color-light;
                 max-width: 200px;
                 overflow: hidden;
                 text-overflow: ellipsis;

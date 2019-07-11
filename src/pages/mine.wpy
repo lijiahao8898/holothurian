@@ -168,7 +168,7 @@
                 width: 20%;
                 font-size: 24rpx;
                 padding: 10rpx;
-                color: $font-dark-color;
+                color: $font-color-dark;
                 position: relative;
                 .iconfont{
                     color: $primary-color;
@@ -185,7 +185,7 @@
 
     .iconfont {
         font-size: 40rpx;
-        color: $font-dark-color;
+        color: $font-color-dark;
         margin-bottom: 10rpx;
     }
 </style>

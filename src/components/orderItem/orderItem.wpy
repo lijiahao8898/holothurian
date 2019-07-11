@@ -1,10 +1,15 @@
 <template>
     <repeat for="{{itemList}}" key="item.id">
         <view class="goods-item" @tap="goOrderDetail({{item.id}})">
+
             <repeat for="{{item.orderSkuDTOList}}" key="i.id" item="i" key="n">
                 <view class="goods-item-content">
-                    <image lazy-load class="goods-item__image" mode="aspectFill" src="{{i.imgUrl || i.skuImgUrl}}"
-                           @tap.stop="goGoodsDetail({{i.itemId}})"></image>
+                    <image lazy-load
+                           class="goods-item__image"
+                           mode="aspectFill"
+                           src="{{i.imgUrl || i.skuImgUrl}}"
+                           @tap.stop="goGoodsDetail({{i.itemId}})" />
+
                     <view class="goods-container">
                         <view class="goods-container__name">{{i.itemName}}</view>
                         <view class="goods-container__sku">{{i.skuAttr}}</view>
@@ -15,6 +20,7 @@
                     </view>
                 </view>
             </repeat>
+
             <view class="goods-item-footer">
                 <view class="goods-item-footer__remark">备注：{{item.remark || ''}}</view>
                 <view class="goods-item-footer__btn" @tap.stop="goPay">
@@ -49,7 +55,7 @@
                 });
             },
             goPay () {
-
+                // todo 调用微信支付
             }
         }
     }
@@ -60,18 +66,17 @@
         &-pay {
             background: $primary-color;
             color: $white;
-            border-radius: 4px;
-            font-size: 12px;
+            border-radius: $border-radius-base;
+            font-size: $font-size-small;
         }
     }
     .goods {
-
         &-item {
             background: $white;
             margin: 5px 8px;
             padding: 5px;
             position: relative;
-            border-radius: 8px;
+            border-radius: $border-radius-large;
 
             &-content {
                 overflow: hidden;
@@ -80,23 +85,13 @@
 
             &-footer{
                 &__remark {
-                    color: $font-light-color;
-                    font-size: 12px;
+                    color: $font-color-light;
+                    font-size: $font-size-small;
                     margin-bottom: 5px;
                 }
                 &__btn {
                     text-align: right;
                 }
-            }
-
-            &__close {
-                background: $primary-color-red;
-                color: $white;
-                height: inherit;
-                width: 65px;
-                line-height: 120px;
-                font-size: 12px;
-                text-align: center;
             }
 
             &__image {
@@ -108,9 +103,9 @@
             &__number {
                 position: absolute;
                 right: 0;
-                top: 96rpx;
-                font-size: 12px;
-                color: $font-dark-color;
+                top: 104rpx;
+                font-size: $font-size-small;
+                color: $font-color-dark;
             }
         }
 
@@ -133,8 +128,8 @@
             position: relative;
 
             &__name {
-                font-size: 12px;
-                color: $font-dark-color;
+                font-size: $font-size-small;
+                color: $font-color-dark;
                 max-width: 480rpx;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -142,8 +137,8 @@
             }
 
             &__sku {
-                font-size: 12px;
-                color: $font-light-color;
+                font-size: $font-size-small;
+                color: $font-color-light;
                 max-width: 400rpx;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -152,7 +147,6 @@
             }
 
             &-price {
-                font-size: 12px;
                 text-align: left;
                 color: red;
                 padding: 0 4px;
@@ -162,23 +156,16 @@
                     display: inline-block;
                     position: relative;
                     margin: 0 0 0 10px;
-                    font-size: 14px;
+                    font-size: $font-size-base;
 
                     &:before {
                         content: '￥';
-                        font-size: 14px;
+                        font-size: $font-size-base;
                         position: absolute;
                         left: -15px;
                         top: 0;
                     }
                 }
-            }
-
-            &__stepper {
-                position: absolute;
-                bottom: 5px;
-                right: 0;
-                z-index: 0;
             }
         }
     }

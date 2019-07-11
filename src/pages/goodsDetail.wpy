@@ -1,21 +1,33 @@
 <template>
-    <view>
-        <!-- 轮播图 -->
-        <swiperComponent :imgList.sync="imgList" :type.sync="swiperType"></swiperComponent>
-        <view class="goods">
-            <view class="goods-price">
-                <view class="goods-price__tip">价格：</view>
-                <view class="goods-price__discount">{{filter.accDiv(itemData.salePrice, 100)}}</view>
-                <view class="goods-price__old">{{filter.accDiv(itemData.marketPrice, 100)}}</view>
+    <view class="goods-page">
+
+        <view class="goods-item">
+            <!-- 轮播图 -->
+            <swiperComponent :imgList.sync="imgList" :type.sync="swiperType"></swiperComponent>
+
+            <view class="goods-share" @tap="showSharePopup">
+                <view class="iconfont icon-share"></view>
             </view>
-            <view class="goods-name">{{itemData.name}}</view>
+
+            <view class="goods-base">
+                <view class="goods-price">
+                    <view class="goods-price__tip">价格：</view>
+                    <view class="goods-price__discount">{{filter.accDiv(itemData.salePrice, 100)}}</view>
+                    <view class="goods-price__old">{{filter.accDiv(itemData.marketPrice, 100)}}</view>
+                </view>
+                <view class="goods-name">{{itemData.name}}</view>
+            </view>
+
             <view class="goods-detail">
+                <view class="goods-detail__tip">商品详情</view>
                 <repeat for="{{itemData.itemAttrImgList}}" key="item.id">
                     <image lazy-load class="goods-detail__image" mode="aspectFill" src="{{item.value}}" alt="{{item.name}}"/>
                 </repeat>
             </view>
+
         </view>
 
+        <!-- 商品sku弹框 -->
         <view class="goods-popup">
             <van-popup show="{{showPopup}}" position="bottom"
                        bind:click-overlay="onCloseHandle">
@@ -42,28 +54,19 @@
             </van-popup>
         </view>
 
+        <!-- 分享弹窗 -->
         <view class="share-popup">
             <van-popup show="{{showPopupShare}}" position="bottom"
                        bind:click-overlay="onCloseHandle">
-                <view class="sku">
-                    <image lazy-load class="sku-image" mode="aspectFill" src="{{currentSku.imgUrl}}" alt="{{currentSku.skuAttr}}"></image>
-                    <view class="sku-price">
-                        <view class="sku-price__discount">{{filter.accDiv(currentSku.skuSalePrice, 100)}}</view>
-                        <view class="sku-price__old">{{filter.accDiv(currentSku.skuMarketPrice, 100)}}</view>
+                <view class="share-wrapper">
+                    <button class="share-friends" plain open-type="share" hover-class="none">
+                        <view class="iconfont icon-friend"></view>
+                        <view class="share-text">分享给朋友</view>
+                    </button>
+                    <view class="share-qrcode" @tap.default="getGoodsPosters">
+                        <view class="iconfont icon-qr-code"></view>
+                        <view class="share-text">生成商品海报</view>
                     </view>
-                    <view class="sku-wrapper">
-                        <view class="sku-tip">型号规格：</view>
-                        <repeat for="{{itemData.itemSkuDTOList}}" key="item.id">
-                            <view
-                                class="{{item.id === currentSku.id ? 'sku-item active' : 'sku-item'}}"
-                                @tap="changeCurrentSku({{item.id}})">{{item.skuAttr}}</view>
-                        </repeat>
-                    </view>
-                    <view class="sku-wrapper">
-                        <view class="sku-tip">购买数量：</view>
-                        <van-stepper value="{{buyNum}}" bind:change="onChangeNumberHandle" integer/>
-                    </view>
-                    <button class="sku-confirm-btn" type="primary" @tap="confirm">确定</button>
                 </view>
             </van-popup>
         </view>
@@ -183,16 +186,6 @@
                 this.itemData = rows;
                 this.currentSku = rows.itemSkuDTOList[0];
                 this.$apply();
-                //
-                // // 下载图片
-                // const that = this;
-                // wepy.downloadFile({
-                //     url: rows.itemCarousel[0],
-                //     success: function (res) {
-                //         console.log('我是下载的图片：' + res.tempFilePath);
-                //         that.downLoadImage = res.tempFilePath
-                //     }
-                // })
             }
             wepy.hideLoading();
         }
@@ -227,7 +220,6 @@
                     itemName: this.itemData.name,
                 }]
             }).then((res) => {
-                console.log(res);
                 wepy.hideLoading();
                 wepy.navigateTo({
                     url: `/pages/orderConfirm?tf=2`
@@ -242,23 +234,33 @@
                 });
             },
 
+            // 打开加入购物车弹框
             openAddCartModal() {
                 this.showPopup = true;
                 this.operateType = 1;
             },
 
+            // 打开立即购买弹框
             openGoPayModal () {
                 this.showPopup = true;
                 this.operateType = 2
             },
 
+            // 关闭操作
             onCloseHandle () {
                 this.showPopup = false;
+                this.showPopupShare = false;
                 this.operateType = null;
             },
 
+            // 选择要购买的数量
             onChangeNumberHandle (event) {
                 this.buyNum = event.detail;
+            },
+
+            // 显示分享弹框
+            showSharePopup () {
+                this.showPopupShare = true
             },
 
             // 改变当前选中的sku
@@ -272,6 +274,7 @@
                 });
             },
 
+            // 下单或者加入购物的确定操作
             confirm () {
                 if(this.operateType === 1) {
                     this.addCart();
@@ -280,12 +283,11 @@
                 }
             },
 
-            save () {
-
-            },
-
-            share_quan () {
-
+            // 生成海报
+            getGoodsPosters () {
+                wepy.showLoading({
+                    title: '生成海报中...'
+                })
             }
         };
     }
@@ -295,26 +297,34 @@
     @import "../../src/assets/config";
 
     .goods {
-        width: 100%;
-        display: inline-block;
-        color: #666;
-        margin: 0 0 20rpx 0;
-        background: $page-bg;
-        &-item {
-            background: #fff;
-            padding-bottom: 20rpx;
-            &__wrapper {
-                width: 100%;
-                text-align: center;
-                margin: 0 auto;
-            }
-            .image {
-                width: 360rpx;
-                height: 360rpx;
+        &-page {
+            position: relative;
+        }
+
+        &-base {
+            width: 100%;
+            display: inline-block;
+            color: $font-color-dark;
+            margin: 0 0 10px 0;
+            background: $page-bg;
+        }
+
+        &-share {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 5px;
+            color: $font-color-black;
+            text-align: right;
+            .iconfont {
+                margin: 5px;
+                font-size: $font-size-large + 2px;
             }
         }
+
         &-name {
-            font-size: 24rpx;
+            font-size: $font-size-base;
             text-align: left;
             text-overflow: -o-ellipsis-lastline;
             overflow: hidden;
@@ -323,53 +333,60 @@
             -webkit-line-clamp: 2;
             line-clamp: 2;
             -webkit-box-orient: vertical;
-            margin: 0 0 10px 0;
             padding: 0 10px 10px 10px;
             height: 70rpx;
             background: #fff;
         }
         &-price {
-            font-size: 28rpx;
+            font-size: $font-size-base;
             text-align: left;
             color: red;
             padding: 0 10px;
             background: #fff;
             &__tip {
                 display: inline-block;
+                font-size: inherit;
             }
             &__discount{
                 display: inline-block;
                 position: relative;
-                margin: 0 20rpx 0 22rpx;
+                margin: 0 25rpx 0 25rpx;
                 font-size: 36rpx;
                 &:before{
                     content: '￥';
-                    font-size: 26rpx;
+                    font-size: $font-size-large;
                     position: absolute;
-                    left: -20rpx;
-                    top: 8rpx;
+                    left: -25rpx;
+                    top: 2px;
                 }
             }
             &__old{
                 display: inline-block;
                 position: relative;
-                margin-left: 22rpx;
-                color: $gray;
+                margin-left: 10px;
+                color: $font-color-light;
                 text-decoration: line-through;
                 &:before{
                     content: '￥';
-                    font-size: 24rpx;
+                    font-size: $font-size-base;
                     position: absolute;
-                    left: -20rpx;
-                    top: 4rpx;
+                    left: -25rpx;
+                    top: 0;
                 }
             }
         }
 
         &-detail{
             padding-top: 5px;
-            background: #fff;
-            &__image{
+            background: $white;
+            &__tip {
+                color: $font-color-light;
+                font-size: 1.5 * $font-size-small;
+                text-align: center;
+                margin: 5px 0;
+            }
+
+            &__image {
                 width: 100%;
             }
         }
@@ -382,7 +399,7 @@
             width: 250rpx;
             height: 250rpx;
             margin: 10px 5px;
-            border: 1px solid #ddd;
+            border: 1px solid $gray-light;
             border-radius: 4px;
         }
 
@@ -401,10 +418,14 @@
             font-size: 24rpx;
             color: #999;
             background: #fff;
-            border: 1px solid #999;
+            border: 1px solid #ddd;
             display: inline-block;
             padding: 5px;
             margin: 2px 5px;
+            max-width: 360rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
 
             &.active {
                 color: #fff;
@@ -414,7 +435,7 @@
         }
 
         &-price {
-            font-size: 24rpx;
+            font-size: $font-size-base;
             text-align: left;
             color: red;
             position: absolute;
@@ -426,28 +447,28 @@
             &__discount{
                 display: inline-block;
                 position: relative;
-                margin: 0 20rpx 0 22rpx;
+                margin: 0 20rpx 0 20rpx;
                 font-size: 36rpx;
                 &:before{
                     content: '￥';
-                    font-size: 26rpx;
+                    font-size: $font-size-base;
                     position: absolute;
-                    left: -20rpx;
-                    top: 8rpx;
+                    left: -25rpx;
+                    top: 6rpx;
                 }
             }
             &__old{
                 display: inline-block;
                 position: relative;
-                margin-left: 22rpx;
+                margin-left: 20rpx;
                 color: $gray;
                 text-decoration: line-through;
                 &:before{
                     content: '￥';
-                    font-size: 24rpx;
+                    font-size: $font-size-base;
                     position: absolute;
-                    left: -20rpx;
-                    top: 4rpx;
+                    left: -25rpx;
+                    top: 0;
                 }
             }
         }
@@ -459,13 +480,6 @@
         }
     }
 
-    .footer{
-        font-size: 28rpx;
-        color: #999;
-        margin: 20rpx 0;
-        text-align: center;
-    }
-
     .bottom{
         &-bar{
             position: fixed;
@@ -474,6 +488,41 @@
             right: 0;
             bottom: 0;
             background: $primary-color;
+        }
+    }
+
+    .share {
+        &-wrapper {
+            overflow: hidden;
+            margin: 10px 0;
+            .iconfont {
+                color: $primary-color;
+                width: 80px;
+                height: 80px;
+                line-height: 80px;
+                margin: 0 auto;
+                font-size: 80rpx;
+            }
+        }
+        &-friends {
+            width: 50%;
+            color: $font-color-light;
+            float: left;
+            text-align: center;
+            border: none;
+            background: $white;
+            font-size: 12px;
+        }
+        &-qrcode {
+            width: 50%;
+            color: $font-color-light;
+            float: left;
+            text-align: center;
+            font-size: 12px;
+        }
+        &-text {
+            line-height: 30px;
+            height: 30px;
         }
     }
 

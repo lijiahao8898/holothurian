@@ -35,9 +35,8 @@ class HTTP {
                 }
             }).catch((err) => {
                 reject(err);
-                console.log(err);
                 wx.showToast({
-                    title: err.data.message,
+                    title: err.data.message || '系统出现未知错误',
                     icon: 'none'
                 });
             });

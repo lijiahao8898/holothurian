@@ -212,6 +212,17 @@ class API extends HTTP {
             }
         })
     }
+
+    // 订单详情
+    getGoodsPoster (params) {
+        return this.request({
+            url: `posters`,
+            method: 'get',
+            data: {
+                ...params
+            }
+        })
+    }
 }
 
 export default API;

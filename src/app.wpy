@@ -12,8 +12,8 @@
         config = {
             pages: [
                 'pages/list',
-                'pages/mine',
                 'pages/cart',
+                'pages/mine',
                 'pages/index/index',
                 'pages/authorization',
                 'pages/goodsDetail',

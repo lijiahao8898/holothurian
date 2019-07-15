@@ -9,6 +9,10 @@
                 <view class="iconfont icon-share"></view>
             </view>
 
+            <view class="goods-home" @tap="goHome">
+                <view class="iconfont icon-yemian-copy"></view>
+            </view>
+
             <view class="goods-base">
                 <view class="goods-price">
                     <view class="goods-price__tip">价格：</view>
@@ -25,6 +29,12 @@
                             <view class="brand-title">品牌：</view>
                             <view class="brand-name">{{itemData.brandDTO.name}}</view>
                             <image lazy-load class="brand-image" mode="aspectFill" src="{{itemData.brandDTO.logoUrl}}"/>
+                        </view>
+                    </van-cell>
+                    <van-cell wx:if="{{itemData.stock}}">
+                        <view slot="title" class="brand">
+                            <view class="brand-title">剩余：</view>
+                            <view class="brand-name">{{itemData.stock}}</view>
                         </view>
                     </van-cell>
                     <van-cell wx:if="{{itemData.itemAttrParamList.length > 0}}">
@@ -326,7 +336,13 @@
         }
 
         methods = {
-            goCart() {
+            goHome () {
+                wepy.switchTab({
+                    url: `/pages/index/index`
+                });
+            },
+
+            goCart () {
                 wepy.switchTab({
                     url: `/pages/cart`
                 });
@@ -463,14 +479,26 @@
         &-share {
             position: absolute;
             top: 0;
-            left: 0;
             right: 0;
             padding: 5px;
-            color: $font-color-black;
+            color: $primary-color;
             text-align: right;
             .iconfont {
                 margin: 5px;
-                font-size: $font-size-large + 2px;
+                font-size: $font-size-large + 4rpx;
+            }
+        }
+
+        &-home {
+            position: absolute;
+            top: 0;
+            right: 35px;
+            padding: 5px;
+            color: $primary-color;
+            text-align: right;
+            .iconfont {
+                margin: 5px;
+                font-size: $font-size-large + 4rpx;
             }
         }
 
@@ -505,7 +533,7 @@
                 font-size: 40rpx;
                 &:before{
                     content: '￥';
-                    font-size: $font-size-large + 2px;
+                    font-size: $font-size-large + 4rpx;
                     position: absolute;
                     left: -30rpx;
                     top: 2px;
@@ -647,7 +675,7 @@
                 font-size: 40rpx;
                 &:before{
                     content: '￥';
-                    font-size: $font-size-large + 2px;
+                    font-size: $font-size-large + 4rpx;
                     position: absolute;
                     left: -30rpx;
                     top: 6rpx;

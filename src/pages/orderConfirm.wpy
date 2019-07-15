@@ -72,7 +72,7 @@
             <van-submit-bar
                 price="{{price}}"
                 button-text="立即支付"
-                bind:submit="wxpay"
+                bind:submit="getOrder"
                 tip="{{ true }}"
                 custom-class="cart-submit__bar"
                 button-class="cart-submit__button"
@@ -201,6 +201,43 @@
             }
         }
 
+        async payPre (orderId) {
+            const data = await api.payPre({
+                orderId
+            });
+            if(data.code === 200) {
+                this.wxpay(data.data)
+            }
+        }
+
+        wxpay (param) {
+            console.log(param);
+            console.log(param.timeStamp);
+            console.log(param.nonceStr)
+            console.log(param.signType)
+            console.log(param.sign)
+            console.log(`prepay_id=${param.repayId}`);
+            wx.requestPayment({
+                timeStamp: JSON.stringify(param.timeStamp),
+                nonceStr: param.nonceStr,
+                package: `prepay_id=${param.repayId}`,
+                signType: param.signType,
+                paySign: param.sign,
+                success: function (res) {
+                    console.log("success");
+                    console.log(res);
+                },
+                fail: function (res) {
+                    console.log("fail");
+                    console.log(res);
+                },
+                complete: function (res) {
+                    console.log("complete");
+                    console.log(res)
+                }
+            })
+        }
+
         methods = {
             upper (e) {
                 console.log(e);
@@ -218,7 +255,7 @@
                 });
             },
 
-            async wxpay () {
+            async getOrder () {
                 const {tradeFrom} = this.params;
                 const orderSkuDTOList = this.goodsInfo.map((item) => {
                     return {
@@ -233,21 +270,22 @@
                     ...this.params
                 });
                 if(data.code === 200) {
-                    console.log(data);
-                    wepy.showModal({
-                        title: '温馨提示',
-                        content: '您当前购买的订单ID' + data.data,
-                        cancelColor: '#ddd',
-                        confirmColor: '#1ea9f0',
-                    }).then((res) => {
-                        if (res.confirm) {
-                            wepy.navigateBack({
-                                delta: 1
-                            });
-                        } else if (res.cancel) {
-
-                        }
-                    });
+                    this.payPre(data.data);
+                    // console.log(data);
+                    // wepy.showModal({
+                    //     title: '温馨提示',
+                    //     content: '您当前购买的订单ID' + data.data,
+                    //     cancelColor: '#ddd',
+                    //     confirmColor: '#1ea9f0',
+                    // }).then((res) => {
+                    //     if (res.confirm) {
+                    //         wepy.navigateBack({
+                    //             delta: 1
+                    //         });
+                    //     } else if (res.cancel) {
+                    //
+                    //     }
+                    // });
                 }
             },
 

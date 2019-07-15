@@ -1,46 +1,56 @@
 <template>
     <view class="cart">
-        <view wx:if="{{cartList.length > 0}}" class="cart-wrapper">
-            <repeat for="{{cartList}}" key="{{item.id}}">
-                <van-swipe-cell id="swipe-cell" right-width="{{ 65 }}" async-close bind:close="onClose({{item.id}})">
-                    <view class="cart-item">
-                        <view class="cart-item__checkbox">
-                            <van-checkbox value="{{item.checked}}" bind:change="onChange({{item.id}})"></van-checkbox>
-                        </view>
-                        <image lazy-load class="cart-item__image" mode="aspectFill" src="{{item.skuImgUrl}}" @tap="goGoodsDetail({{item.itemId}})"></image>
-                        <view class="cart-container">
-                            <view class="cart-container__name">{{item.itemName}}</view>
-                            <view class="cart-container__sku">{{item.skuAttr}}</view>
-                            <view class="cart-container-price">
-                                <view class="cart-container-price__discount">{{filter.accDiv(item.skuSalePrice, 100)}}</view>
+        <view class="cart-section">
+            <view class="cart-number">共{{cartNumber}}件商品</view>
+            <view wx:if="{{cartList.length > 0}}" class="cart-wrapper">
+
+                <repeat for="{{cartList}}" key="{{item.id}}">
+                    <van-swipe-cell id="swipe-cell" right-width="{{ 50 }}" async-close bind:close="onClose({{item.id}})">
+                        <view class="cart-item">
+                            <view class="cart-item__checkbox">
+                                <van-checkbox value="{{item.checked}}" bind:change="onChange({{item.id}})"></van-checkbox>
                             </view>
-                            <view class="cart-container__stepper">
-                                <van-stepper
-                                    value="{{item.number}}"
-                                    bind:change="onChangeNumberHandle({{item.id}})"
-                                    integer/>
+                            <image lazy-load class="cart-item__image" mode="aspectFill" src="{{item.skuImgUrl}}" @tap="goGoodsDetail({{item.itemId}})"></image>
+                            <view class="cart-container">
+                                <view class="cart-container__name">{{item.itemName}}</view>
+                                <view class="cart-container__sku">{{item.skuAttr}}</view>
+                                <view class="cart-container-price">
+                                    <view class="cart-container-price__discount">{{filter.accDiv(item.skuSalePrice, 100)}}</view>
+                                </view>
+                                <view class="cart-container__stepper">
+                                    <van-stepper
+                                        value="{{item.number}}"
+                                        bind:change="onChangeNumberHandle({{item.id}})"
+                                        integer/>
+                                </view>
                             </view>
                         </view>
-                    </view>
-                    <view slot="right" class="cart-item__close">删除</view>
-                </van-swipe-cell>
-            </repeat>
-            <view class="cart-submit">
-                <van-submit-bar
-                    price="{{price}}"
-                    button-text="下单"
-                    bind:submit="onClickButton"
-                    tip="{{ true }}"
-                    custom-class="cart-submit__bar"
-                    button-class="cart-submit__button"
-                >
-                    <van-checkbox class="cart-submit__checkbox" value="{{checkBoxAll}}" bind:change="onChangeAllHandle"></van-checkbox>
-                </van-submit-bar>
+                        <view slot="right" class="cart-item__close">删除</view>
+                    </van-swipe-cell>
+                </repeat>
+
+                <view class="cart-submit">
+                    <van-submit-bar
+                        price="{{price}}"
+                        button-text="下单"
+                        bind:submit="onClickButton"
+                        tip="{{ true }}"
+                        custom-class="cart-submit__bar"
+                        button-class="cart-submit__button"
+                    >
+                        <view slot="tip" class="cart-submit__tip">
+                            <van-icon class="cart-submit__icon" name="warning-o" />
+                            <view>左滑删除商品</view>
+                        </view>
+                        <van-checkbox class="cart-submit__checkbox" value="{{checkBoxAll}}" bind:change="onChangeAllHandle"></van-checkbox>
+                    </van-submit-bar>
+                </view>
+
             </view>
-        </view>
-        <view wx:else>
-            <view class="no-item">
-                您的购物车空空如也~
+            <view wx:else>
+                <view class="no-item">
+                    您的购物车空空如也~
+                </view>
             </view>
         </view>
     </view>
@@ -56,12 +66,13 @@
     export default class cart extends wepy.page {
         config = {
             navigationBarTitleText: '购物车',
-            'usingComponents': {
+            usingComponents: {
                 'van-checkbox': '../components/vant-weapp/checkbox/index',
                 'van-checkbox-group': '../components/vant-weapp/checkbox-group/index',
                 'van-stepper': '../components/vant-weapp/stepper/index',
                 "van-submit-bar": "../components/vant-weapp/submit-bar/index",
-                "van-swipe-cell": "../components/vant-weapp/swipe-cell/index"
+                "van-swipe-cell": "../components/vant-weapp/swipe-cell/index",
+                "van-icon": "../components/vant-weapp/icon/index"
             }
         };
 
@@ -70,6 +81,7 @@
         };
 
         data = {
+            cartNumber: 0,
             cartList: [],
             checkBoxAll: false
         };
@@ -113,6 +125,7 @@
             const data = await api.getCartList();
             if (data.code === 200) {
                 this.cartList = [...data.data];
+                this.cartNumber = this.cartList.length;
                 this.$apply();
             }
             wepy.hideLoading({
@@ -256,22 +269,37 @@
     }
 
     .cart {
+        &-section {
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+        &-number {
+            font-size: $font-size-base;
+            background: $primary-color;
+            padding: 10rpx 15rpx 140rpx 15rpx;
+            position: absolute;
+            left: 0;
+            right: 0;
+        }
         &-wrapper{
-            padding-bottom: 60px;
+            padding: 40px 0 98px 0;
         }
         &-item {
             background: $white;
-            margin: 2px 5px;
+            margin: 4px;
             position: relative;
             overflow: hidden;
+            border-radius: $border-radius-large;
             &__close {
                 background: $primary-color-red;
                 color: $white;
                 height: inherit;
-                width: 65px;
+                width: 50px;
                 line-height: 120px;
                 font-size: 12px;
                 text-align: center;
+                border-radius: 8px 0 0 8px;
             }
 
             &__image {
@@ -300,6 +328,19 @@
             &__button {
                 background-color: $primary-color;
             }
+            &__tip {
+                height: 21px;
+                line-height: 21px;
+                font-size: $font-size-base;
+                position: relative;
+                > view {
+                    margin-left: 20px;
+                }
+            }
+            &__icon {
+                position: absolute;
+                top: 2px;
+            }
         }
 
         &-container {
@@ -311,7 +352,7 @@
             &__name {
                 font-size: 12px;
                 color: $font-color-dark;
-                max-width: 200px;
+                max-width: 420rpx;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -320,7 +361,7 @@
             &__sku {
                 font-size: 12px;
                 color: $font-color-light;
-                max-width: 200px;
+                max-width: 420rpx;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;

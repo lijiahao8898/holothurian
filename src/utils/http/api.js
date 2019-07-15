@@ -223,6 +223,17 @@ class API extends HTTP {
             }
         })
     }
+
+    // 预支付信息
+    payPre (params) {
+        return this.request({
+            url: 'pay/pre',
+            method: 'get',
+            data: {
+                ...params
+            }
+        })
+    }
 }
 
 export default API;

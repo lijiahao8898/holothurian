@@ -84,7 +84,9 @@
 
 <style lang="scss" type="text/scss">
     @import "../../src/assets/config";
-
+    #scrollView {
+        margin: 10rpx 0;
+    }
     .footer{
         font-size: 28rpx;
         color: #999;

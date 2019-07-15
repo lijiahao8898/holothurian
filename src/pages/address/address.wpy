@@ -1,6 +1,6 @@
 <template>
     <view class="address">
-        <view class="address-tap-add" @tap="goAddressAdd">添加新地址</view>
+        <view class="address-tap-add" @tap="goAddressAdd">新地址</view>
         <view wx:if="{{addressList.length > 0}}">
             <repeat for="{{addressList}}" key="item">
                 <view class="address-item">

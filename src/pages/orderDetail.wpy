@@ -149,7 +149,7 @@
                 this.goodsInfo = [...orderSkuDTOList];
                 this.currentAddressList = [recipientAddressDTO];
 
-                goodsInfo.forEach(item => {
+                this.goodsInfo.forEach(item => {
                     this.price += (item.skuNumber * item.skuSalePrice);
                 });
 

@@ -17,9 +17,9 @@ $font-color-dark: #666;
 $font-color-light: #9fb2b4;
 
 // font size
-$font-size-small: 12px;
-$font-size-base: $font-size-small + 2px;
-$font-size-large: $font-size-base + 2px;
+$font-size-small: 24rpx;
+$font-size-base: $font-size-small + 4rpx;
+$font-size-large: $font-size-base + 4rpx;
 
-$border-radius-base: 4px;
+$border-radius-base: 8rpx;
 $border-radius-large: $border-radius-base * 2;

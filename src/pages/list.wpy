@@ -70,6 +70,7 @@
         onReachBottom () {
             const pager = {...this.pager};
             pager.pageNum += 1;
+
             this.pager = {...pager};
             this.getGoodsList();
         }

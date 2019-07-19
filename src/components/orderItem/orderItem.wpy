@@ -1,6 +1,6 @@
 <template>
     <repeat for="{{itemList}}" key="item.id">
-        <view class="goods-item" @tap="goOrderDetail({{item.id}})">
+        <view class="goods-item">
 
             <repeat for="{{item.orderSkuDTOList}}" key="i.id" item="i" key="n">
                 <view class="goods-item-content">
@@ -23,8 +23,8 @@
 
             <view class="goods-item-footer">
                 <view class="goods-item-footer__remark">备注：{{item.remark || ''}}</view>
-                <view class="goods-item-footer__btn" @tap.stop="goPay">
-                    <button class="btn-pay" type="primary" size="mini">付款</button>
+                <view class="goods-item-footer__btn">
+                    <button class="btn-pay" type="primary" size="mini" @tap.stop="goPay({{item.id}})">付款</button>
                 </view>
             </view>
         </view>
@@ -49,13 +49,10 @@
                     url: `/pages/goodsDetail?goodsId=${id}`
                 });
             },
-            goOrderDetail (id) {
+            goPay (id) {
                 wepy.navigateTo({
                     url: `/pages/orderDetail?orderId=${id}`
                 });
-            },
-            goPay () {
-                // todo 调用微信支付
             }
         }
     }

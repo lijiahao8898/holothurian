@@ -161,6 +161,39 @@
             wepy.stopPullDownRefresh();
         }
 
+        async payPre (orderId) {
+            const data = await api.payPre({
+                orderId
+            });
+            if(data.code === 200) {
+                this.wxpay(data.data)
+            }
+        }
+
+        wxpay (param) {
+            wx.requestPayment({
+                timeStamp: param.timeStamp,
+                nonceStr: param.nonceStr,
+                package: `prepay_id=${param.repayId}`,
+                signType: param.signType,
+                paySign: param.sign,
+                success: function (res) {
+                    wx.removeStorageSync('orderInfo');
+                    wx.removeStorageSync('addressInfo');0
+                    wepy.redirectTo({
+                        url: '/pages/result/paySuccess'
+                    })
+                },
+                fail: function (res) {
+                    wepy.redirectTo({
+                        url: '/pages/result/payFail'
+                    })
+                },
+                complete: function (res) {
+                }
+            })
+        }
+
         methods = {
             upper (e) {
                 console.log(e);
@@ -173,35 +206,7 @@
             },
 
             async wxpay () {
-                console.log(this.goodsInfo);
-                const orderSkuDTOList = this.goodsInfo.map((item) => {
-                    return {
-                        skuId: item.id,
-                        skuNumber: item.number
-                    }
-                });
-                const data = await api.createOrders({
-                    orderSkuDTOList: orderSkuDTOList,
-                    recipientAddressId: this.currentAddressList[0].id,
-                    ...this.params
-                });
-                if(data.code === 200) {
-                    console.log(data);
-                    wepy.showModal({
-                        title: '温馨提示',
-                        content: '您当前购买的订单ID' + data.data,
-                        cancelColor: '#ddd',
-                        confirmColor: '#1ea9f0',
-                    }).then((res) => {
-                        if (res.confirm) {
-                            wepy.navigateBack({
-                                delta: 1
-                            });
-                        } else if (res.cancel) {
-
-                        }
-                    });
-                }
+                this.payPre(this.params.orderId)
             },
 
             changeRemark (event) {

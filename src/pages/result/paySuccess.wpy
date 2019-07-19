@@ -1,0 +1,43 @@
+<template>
+    <view class="success">
+        <view class="success-wrapper">
+            <view class="iconfont icon-zhifuchenggong"></view>
+            <view>支付成功</view>
+        </view>
+        <van-button @tap="goIndex" type="info" size="small">前往首页</van-button>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    export default class PaySuccess extends wepy.page {
+        config = {
+            navigationBarTitleText: '支付成功',
+            usingComponents: {
+                'van-icon': '../../components/vant-weapp/icon/index',
+                'van-button': '../../components/vant-weapp/button/index',
+            }
+        };
+
+        methods = {
+            goIndex () {
+                wepy.switchTab({url: `/pages/index/index`});
+            }
+        }
+    }
+</script>
+
+<style type="text/scss" lang="scss" scoped>
+    @import "../../../src/assets/config";
+    .success {
+        text-align: center;
+        &-wrapper {
+            margin: 50px 0;
+            color: $primary-color-success;
+        }
+        .icon-zhifuchenggong{
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+    }
+</style>

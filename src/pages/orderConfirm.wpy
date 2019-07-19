@@ -137,33 +137,7 @@
             } else {
                 this.currentAddressList = addressInfo;
             }
-
-            // wx.login({
-            //     success: (res) => {
-            //         console.log(res.code);
-            //         //获取openid
-            //         // that.getOpenId(res.code)}
-            //     }
-            // })
         }
-
-        // getOpenId (code) {
-        //     var that = this;
-        //     wx.request({
-        //         url: "https://api.weixin.qq.com/sns/jscode2session?appid=小程序appid&secret=小程序应用密钥&js_code=" + code + "&grant_type=authorization_code",
-        //         data: {},
-        //         method: 'GET',
-        //         success: function (res) {
-        //             that.generateOrder(res.data.openid)
-        //         },
-        //         fail: function () {
-        //             // fail
-        //         },
-        //         complete: function () {
-        //             // complete
-        //         }
-        //     })
-        // }
 
         initPage () {
             this.price = 0;
@@ -211,29 +185,25 @@
         }
 
         wxpay (param) {
-            console.log(param);
-            console.log(param.timeStamp);
-            console.log(param.nonceStr)
-            console.log(param.signType)
-            console.log(param.sign)
-            console.log(`prepay_id=${param.repayId}`);
             wx.requestPayment({
-                timeStamp: JSON.stringify(param.timeStamp),
+                timeStamp: param.timeStamp,
                 nonceStr: param.nonceStr,
                 package: `prepay_id=${param.repayId}`,
                 signType: param.signType,
                 paySign: param.sign,
                 success: function (res) {
-                    console.log("success");
-                    console.log(res);
+                    wx.removeStorageSync('orderInfo');
+                    wx.removeStorageSync('addressInfo');
+                    wepy.redirectTo({
+                        url: '/pages/result/paySuccess'
+                    })
                 },
                 fail: function (res) {
-                    console.log("fail");
-                    console.log(res);
+                    wepy.redirectTo({
+                        url: '/pages/result/payFail'
+                    })
                 },
                 complete: function (res) {
-                    console.log("complete");
-                    console.log(res)
                 }
             })
         }

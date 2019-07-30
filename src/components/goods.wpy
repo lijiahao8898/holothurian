@@ -50,14 +50,14 @@
         vertical-align: top;
         border-radius: $border-radius-large;
         &:nth-child(odd) {
-            margin: 0 6rpx 16rpx;
+            margin: 0 6rpx 15rpx;
         }
         &:nth-child(even) {
-            margin: 0 6rpx 16rpx;
+            margin: 0 6rpx 15rpx;
         }
         &-item {
             background: #fff;
-            padding-bottom: 30rpx;
+            padding-bottom: 10rpx;
             border-radius: $border-radius-large;
             &__wrapper {
                 width: 100%;

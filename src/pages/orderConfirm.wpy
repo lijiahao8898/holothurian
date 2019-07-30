@@ -27,6 +27,7 @@
         <view wx:if="{{params.deliveryType == 1}}">
             <van-cell is-link bind:click="changeAddress">
                 <view slot="title">
+                    <view>{{JSON.stringify(currentAddressList)}}</view>
                     <repeat for="{{currentAddressList}}" key="item">
                         <view class="address-item">
                             <view>
@@ -141,6 +142,7 @@
 
         initPage () {
             this.price = 0;
+            this.currentAddressList = [];
             this.$apply();
         }
 

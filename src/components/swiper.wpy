@@ -43,7 +43,7 @@
 
 <style type="text/scss" lang="scss">
     .swiper {
-        height: 300rpx;
+        height: 400rpx;
         width: 100%;
         image {
             width: inherit;
@@ -52,7 +52,7 @@
     }
 
     .goods-detail-swiper {
-        height: 800rpx;
+        height: 750rpx;
         width: 100%;
         image {
             width: inherit;

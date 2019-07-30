@@ -24,7 +24,9 @@
             <view class="goods-item-footer">
                 <view class="goods-item-footer__remark">备注：{{item.remark || ''}}</view>
                 <view class="goods-item-footer__btn">
-                    <button class="btn-pay" type="primary" size="mini" @tap.stop="goPay({{item.id}})">付款</button>
+                    <button wx:if="{{item.orderStatus === 0}}" class="btn-pay" type="primary" size="mini" @tap.stop="goPay({{item.id}})">付款</button>
+                    <button wx:if="{{item.orderStatus >= 1}}" class="btn-pay" type="primary" size="mini" @tap.stop="goPay({{item.id}})">查看物流</button>
+                    <button wx:if="{{item.orderStatus >= 2 &&item.orderStatus < 4}}" class="btn-pay" type="primary" size="mini" @tap.stop="confirmGoods({{item.id}})">确认收货</button>
                 </view>
             </view>
         </view>
@@ -33,6 +35,9 @@
 <script>
     import wepy from 'wepy';
     import filter from '../../utils/filter/index.wxs'
+    import API from '@/utils/http/api';
+
+    const api = new API();
 
     export default class OrderItem extends wepy.component {
         props = {
@@ -53,6 +58,32 @@
                 wepy.navigateTo({
                     url: `/pages/orderDetail?orderId=${id}`
                 });
+            },
+
+            confirmGoods (id) {
+                wepy.showModal({
+                    title: '温馨提示',
+                    content: '确定要确认收货吗？',
+                    cancelColor: '#ddd',
+                    confirmColor: '#1ea9f0',
+                }).then(async (res) => {
+                    if (res.confirm) {
+                        const data = await api.confirmGoods({
+                            id: id,
+                            orderStatus: 4
+                        });
+                        if(data.code === 200) {
+                            wepy.showToast({
+                                title: '确认收货成功！',
+                                icon: 'success',
+                                duration: 2000,
+                                mask: true
+                            });
+                        }
+                    } else if (res.cancel) {
+
+                    }
+                });
             }
         }
     }
@@ -65,6 +96,7 @@
             color: $white;
             border-radius: $border-radius-base;
             font-size: $font-size-small;
+            margin-left: 5px;
         }
     }
     .goods {

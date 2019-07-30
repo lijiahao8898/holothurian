@@ -59,14 +59,14 @@
                     value="{{ params.remark }}"
                     label="备注"
                     type="textarea"
-                    placeholder="请输入备注"
                     autosize
                     bind:change="changeRemark"
                     border="{{ false }}"
+                    disabled="{{orderStatus >= 1}}"
                 />
             </van-cell-group>
         </view>
-        <view class="cart-submit">
+        <view class="cart-submit" wx:if="{{orderStatus === 0}}">
             <van-submit-bar
                 price="{{price}}"
                 button-text="付款"
@@ -76,6 +76,20 @@
                 button-class="cart-submit__button"
             >
             </van-submit-bar>
+        </view>
+        <view class="logistics">
+            <view class="logistics-title">物流信息</view>
+            <view wx:if="{{expressTraces.length > 0}}" class="logistics-line"></view>
+            <view wx:if="{{expressTraces.length > 0}}">
+                <repeat for="{{expressTraces}}" key="item.id">
+                    <view class="logistics-item">
+                        <view class="logistics-item__time">{{item.AcceptTime}}</view>
+                        <view wx:if="{{index === (expressTraces.length - 1)}}" class="logistics-item__desc active">{{item.AcceptStation}}</view>
+                        <view wx:else class="logistics-item__desc">{{item.AcceptStation}}</view>
+                    </view>
+                </repeat>
+            </view>
+            <view wx:else class="logistics-nodata">暂无物流信息</view>
         </view>
     </view>
 </template>
@@ -109,7 +123,9 @@
                 deliveryType: '1',       // 1快递，2其他
                 tradeFrom: '',
                 orderId: ''
-            }
+            },
+            expressTraces: null,
+            orderStatus: null,
         };
         components = {
             goods
@@ -142,12 +158,17 @@
                     remark,
                     deliveryType,
                     recipientAddressDTO,
-                    orderSkuDTOList
+                    orderSkuDTOList,
+                    orderStatus,
+                    expressTraces
                 } = res.data;
                 this.params.remark = remark;
                 this.params.deliveryType = deliveryType.toString();
                 this.goodsInfo = [...orderSkuDTOList];
                 this.currentAddressList = [recipientAddressDTO];
+                this.orderStatus = orderStatus;
+                this.expressTraces = JSON.parse(expressTraces).Traces || [];
+                console.log(orderStatus);
 
                 this.goodsInfo.forEach(item => {
                     this.price += (item.skuNumber * item.skuSalePrice);
@@ -222,6 +243,69 @@
 
 <style lang="scss" type="text/scss">
     @import "../../src/assets/config";
+
+    .logistics {
+        background: $white;
+        margin-top: 5px;
+        color: $font-color-light;
+        position: relative;
+        overflow: hidden;
+        &-nodata {
+            font-size: 12px;
+            margin: 15px 20px;
+            position: relative;
+            min-height: 51px;
+            text-align: center;
+        }
+        &-title {
+            margin-top: 10px;
+            text-align: center;
+        }
+        &-item {
+            font-size: 12px;
+            margin: 15px 20px;
+            position: relative;
+            min-height: 51px;
+            &__time {
+                position: absolute;
+                width: 180rpx;
+                left: 0;
+                top: 0;
+            }
+            &__desc {
+                margin-left: 200rpx;
+                position: relative;
+                &:before {
+                    content: '';
+                    width: 15px;
+                    height: 15px;
+                    background: $font-color-light;
+                    border-radius: 100%;
+                    position: absolute;
+                    left: -50rpx;
+                }
+                &.active {
+                    &:before {
+                        content: '';
+                        width: 15px;
+                        height: 15px;
+                        background: $primary-color;
+                        border-radius: 100%;
+                        position: absolute;
+                        left: -50rpx;
+                    }
+                }
+            }
+        }
+        &-line {
+            width: 1px;
+            position: absolute;
+            left: 204rpx;
+            top: 100rpx;
+            bottom: 110rpx;
+            background: #9fb2b4;
+        }
+    }
 
     .address {
         &-item{

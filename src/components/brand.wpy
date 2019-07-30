@@ -22,7 +22,7 @@
 
 <style type="text/scss" lang="scss">
     .brand {
-        padding: 12rpx 0;
+        padding: 5rpx 0;
         background: #f2f8f9;
         &-wrapper{
             display: flex;
@@ -32,7 +32,7 @@
         &-item {
             width: 240rpx;
             height: 100rpx;
-            padding: 5rpx 5rpx;
+            padding: 4rpx 4rpx;
             margin: 2rpx 2rpx 2rpx 0;
             background: #fff;
             display: inline-block;

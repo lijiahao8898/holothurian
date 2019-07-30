@@ -234,6 +234,17 @@ class API extends HTTP {
             }
         })
     }
+
+    // 预支付信息
+    confirmGoods (params) {
+        return this.request({
+            url: 'orders',
+            method: 'put',
+            data: {
+                ...params
+            }
+        })
+    }
 }
 
 export default API;

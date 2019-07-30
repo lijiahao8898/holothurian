@@ -5,17 +5,18 @@
 .introduce {
     background: #f2f8f9;
     &-article {
+        height: 750rpx;
+        margin-bottom: 10rpx;
         &__img{
-            padding: 0 0 5rpx 0;
             width: 100%;
-            height: 225;
+            height: inherit;
         }
     }
 }
 
 .footer{
-    font-size: 28rpx;
-    color: #999;
-    padding: 20px 0;
+    font-size: 24rpx;
+    color: #ddd;
+    padding: 10px 0;
     text-align: center;
 }

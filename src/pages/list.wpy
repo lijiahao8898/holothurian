@@ -89,9 +89,9 @@
         margin: 10rpx 0;
     }
     .footer{
-        font-size: 28rpx;
-        color: #999;
-        padding: 20px 0;
+        font-size: 24rpx;
+        color: #ddd;
+        padding: 10px 0;
         text-align: center;
     }
 

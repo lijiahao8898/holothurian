@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="../../../../Downloads/font_999110_u6hivavpl/iconfont.css">
 <template>
     <view class="mine">
         <view class="user">
@@ -33,6 +34,10 @@
                     <van-tag type="primary">{{userData.waitConfirmNum}}</van-tag>
                 </view>
                 待收货
+            </view>
+            <view class="order-detail__item" @tap="goOrderList(4)">
+                <view class="iconfont icon-yiwancheng"></view>
+                已完成
             </view>
         </view>
         <view class="address mine-item" @tap="goAddressList">

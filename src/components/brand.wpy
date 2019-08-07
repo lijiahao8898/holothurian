@@ -2,8 +2,8 @@
     <view class="brand">
         <view class="brand-wrapper">
             <repeat for="{{brandList}}" key="item.id">
-                    <view class="brand-item">
-                        <image lazy-load src="{{item.logoUrl}}" alt="{{item.name}}" mode="aspectFill" ></image>
+                    <view class="brand-item" @tap="goList({{item.id}})">
+                        <image lazy-load src="{{item.imageUrl}}" alt="{{item.name}}" mode="aspectFill" ></image>
                     </view>
             </repeat>
         </view>
@@ -17,6 +17,15 @@
         props = {
             brandList: Array
         };
+
+        methods = {
+            goList (id) {
+                console.log(id);
+                wepy.switchTab({
+                    url: `/pages/list?categoryId=${id}`
+                });
+            }
+        }
     }
 </script>
 

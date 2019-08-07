@@ -213,17 +213,73 @@
             swiperComponent,
         };
 
+        onLoad (options) {
+            if(options.scene) {
+                // console.log('has scene')
+                var scene = decodeURIComponent(options.scene);
+                // wx.showModal({
+                //     title: "警告1",
+                //     content: JSON.stringify(options),
+                //     success: function() {
+                //
+                //     }
+                // });
+                // wx.showToast({
+                //     title: 'has scene is' + options.scene,
+                //     icon: 'none'
+                // });
+                var arrPara = scene.split("&");
+                var arr = [];
+                for (var i in arrPara) {
+                    arr = arrPara[i].split("=");
+                    // wx.setStorageSync(arr[0],arr[1]);
+                }
+                this.goodsId = arr[1];
+                this.getGoodsDetail({
+                    goodsId: this.goodsId
+                });
+            }
+        }
+
         onShow () {
             let pages = getCurrentPages();
             let {options} = pages.pop();
-            console.log(111);
-            console.log(pages);
+            // wx.showModal({
+            //     title: "警告2",
+            //     content: JSON.stringify(options),
+            //     success: function() {
+            //     }
+            // });
             if(options.goodsId) {
                 this.goodsId = options.goodsId;
                 this.getGoodsDetail(options);
+            } else if (options.scene) {
+                // console.log('has scene')
+                var scene = decodeURIComponent(options.scene);
+                // wx.showModal({
+                //     title: "警告1",
+                //     content: JSON.stringify(options),
+                //     success: function() {
+                //
+                //     }
+                // });
+                // wx.showToast({
+                //     title: 'has scene is' + options.scene,
+                //     icon: 'none'
+                // });
+                var arrPara = scene.split("&");
+                var arr = [];
+                for (var i in arrPara) {
+                    arr = arrPara[i].split("=");
+                    // wx.setStorageSync(arr[0],arr[1]);
+                }
+                this.goodsId = arr[1];
+                this.getGoodsDetail({
+                    goodsId: this.goodsId
+                });
             } else {
                 wx.showToast({
-                    title: '获取商品数据异常',
+                    title: '获取商品数据异常!',
                     icon: 'none'
                 });
             }

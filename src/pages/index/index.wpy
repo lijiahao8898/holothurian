@@ -112,7 +112,7 @@
             });
             const data = await api.getIndexInformation();
             if(data.code === 200) {
-                this.brandList = [...data.data.brandDTOList];
+                this.brandList = [...data.data.categoryDTOList];
                 this.goodsList = [...data.data.itemDTOList];
                 this.imgList = [...data.data.carouselDTOList];
                 this.articleList = [...data.data.indexImgList];

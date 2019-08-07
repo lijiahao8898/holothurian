@@ -34,6 +34,9 @@
         };
 
         onShow () {
+            let pages = getCurrentPages();
+            let {options} = pages.pop();
+            console.log(options);
             if(this.goodsList.length <= 0) {
                 this.getGoodsList();
             }

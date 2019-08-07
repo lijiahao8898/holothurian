@@ -9,7 +9,7 @@
         <view wx:if="{{type === 1}}">
             <repeat for="{{imgList}}" key="index" index="index" item="item">
                 <swiper-item>
-                    <image lazy-load mode="aspectFill" src="{{item.imgUrl}}" alt=""/>
+                    <image lazy-load mode="aspectFill" src="{{item}}" alt=""/>
                 </swiper-item>
             </repeat>
         </view>

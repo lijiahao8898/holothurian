@@ -25,20 +25,28 @@
             </van-radio-group>
         </view>
         <view wx:if="{{params.deliveryType == 1}}">
-            <van-cell is-link bind:click="changeAddress">
-                <view slot="title">
-                    <view>{{JSON.stringify(currentAddressList)}}</view>
-                    <repeat for="{{currentAddressList}}" key="item">
-                        <view class="address-item">
-                            <view>
-                                {{item.userName}}
-                                <text class="address-item__phone">{{item.phone}}</text>
+            <view wx:if="{{currentAddressList.length > 0}}">
+                <van-cell is-link bind:click="changeAddress">
+                    <view slot="title">
+                        <repeat for="{{currentAddressList}}" key="item">
+                            <view class="address-item">
+                                <view>
+                                    {{item.userName}}
+                                    <text class="address-item__phone">{{item.phone}}</text>
+                                </view>
+                                <view>{{item.province}}{{item.city}}{{item.area}}{{item.street}}{{item.detailAddress}}</view>
                             </view>
-                            <view>{{item.province}}{{item.city}}{{item.area}}{{item.street}}{{item.detailAddress}}</view>
-                        </view>
-                    </repeat>
-                </view>
-            </van-cell>
+                        </repeat>
+                    </view>
+                </van-cell>
+            </view>
+            <view wx:else>
+                <van-cell is-link bind:click="goAddressAdd">
+                    <view slot="title">
+                        <view>去添加</view>
+                    </view>
+                </van-cell>
+            </view>
         </view>
         <view>
             <repeat for="{{goodsInfo}}" key="item.id">
@@ -132,12 +140,12 @@
             this.params.tradeFrom = Number(options.tf);
             this.initPage();
             this.getGoodsStorage();
-            const addressInfo = wepy.getStorageSync('addressInfo');
-            if(!addressInfo) {
+            // const addressInfo = wepy.getStorageSync('addressInfo');
+            // if(!addressInfo) {
                 this.getAddressList();
-            } else {
-                this.currentAddressList = addressInfo;
-            }
+            // } else {
+                // this.currentAddressList = addressInfo;
+            // }
         }
 
         initPage () {
@@ -164,15 +172,26 @@
             const data = await api.getAddressList();
             if (data.code === 200) {
                 this.addressList = [...data.data];
-                this.addressList.forEach(item => {
-                    if (item.isDefault) {
-                        this.currentAddressList.push(item);
+                const addressInfo = wepy.getStorageSync('addressInfo');
+                if(this.addressList.length > 0) {
+                    if(!addressInfo) {
+                        // 没有选择过的收货地址
+                        this.addressList.forEach(item => {
+                            if (item.isDefault) {
+                                this.currentAddressList.push(item);
+                            }
+                        });
+                        wepy.setStorage({
+                            key: 'addressInfo',
+                            data: this.currentAddressList,
+                        });
+                    } else {
+                        this.currentAddressList = addressInfo;
                     }
-                });
-                wepy.setStorage({
-                    key: 'addressInfo',
-                    data: this.currentAddressList,
-                });
+                } else {
+                    // 地址列表为空
+                    this.currentAddressList = []
+                }
                 this.$apply();
             }
         }
@@ -221,6 +240,12 @@
                 });
             },
 
+            goAddressAdd () {
+                wepy.navigateTo({
+                    url: `/pages/address/addressAdd`
+                });
+            },
+
             changeAddress () {
                 wepy.navigateTo({
                     url: `/pages/address/addressSelect`
@@ -228,7 +253,17 @@
             },
 
             async getOrder () {
-                const {tradeFrom} = this.params;
+                const {tradeFrom, deliveryType} = this.params;
+                if(Number(deliveryType) === 1) {
+                    // 快递
+                    if(this.currentAddressList.length <= 0) {
+                        wx.showToast({
+                            title: '无法下单，请选择或添加收货地址!',
+                            icon: 'none'
+                        });
+                        return false;
+                    }
+                }
                 const orderSkuDTOList = this.goodsInfo.map((item) => {
                     return {
                         // 购物车用skuId，商品详情用Id
@@ -238,7 +273,7 @@
                 });
                 const data = await api.createOrders({
                     orderSkuDTOList: orderSkuDTOList,
-                    recipientAddressId: this.currentAddressList[0].id,
+                    recipientAddressId: deliveryType == 1 ? this.currentAddressList[0].id : null,
                     ...this.params
                 });
                 if(data.code === 200) {

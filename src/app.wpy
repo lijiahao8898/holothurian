@@ -106,7 +106,7 @@
             console.log(wepy);
             console.log(wepy.getUpdateManager);
             // this.getUserSystemInfo();
-            // this.getAndDownloadNewVersion();
+            this.getAndDownloadNewVersion();
         }
 
         // 更新版本

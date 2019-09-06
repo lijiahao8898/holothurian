@@ -32,6 +32,20 @@
             <goods :goodsList.sync="goodsList"></goods>
         </view>
 
+        <!-- 长图文介绍 start -->
+        <view class="section introduce">
+            <repeat for="{{imgListBottom}}" key="item.id">
+                <view class="introduce-article">
+                    <image
+                        lazy-load
+                        class="introduce-article__img"
+                        mode="scaleToFill"
+                        src="{{item}}"
+                    />
+                </view>
+            </repeat>
+        </view>
+
         <!-- footer start -->
         <view class="footer">已经到最底部啦~</view>
         <!-- footer end -->
@@ -77,6 +91,7 @@
             goodsList: [],
             brandList: [],
             articleList: [],
+            imgListBottom: []
         };
 
         computed = {
@@ -116,6 +131,8 @@
                 this.goodsList = [...data.data.itemDTOList];
                 this.imgList = [...data.data.carouselDTOList];
                 this.articleList = [...data.data.indexImgList];
+                this.imgListBottom = [...data.data.indexImg2List];
+                console.log(this.imgListBottom);
                 this.$apply();
             }
             wepy.hideLoading();

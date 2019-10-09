@@ -118,7 +118,7 @@
             <image lazy-load class="base64-image" mode="aspectFill" src="{{poster}}" />
         </van-dialog>
 
-        <view class="bottom-bar">
+        <view class="bottom-bar" wx:if="{{isLogin}}">
             <van-goods-action>
                 <van-goods-action-icon
                     icon="cart-o"
@@ -138,6 +138,22 @@
                     type="info"
                     size="small"
                     @tap="openGoPayModal"
+                />
+            </van-goods-action>
+        </view>
+
+        <view class="bottom-bar" wx:else>
+            <van-goods-action>
+                <van-goods-action-icon
+                    icon="cart-o"
+                    text="购物车"
+                    @tap="goCart"
+                />
+                <van-goods-action-button
+                    text="立即登录"
+                    type="info"
+                    size="small"
+                    @tap="goAuthorization"
                 />
             </van-goods-action>
         </view>
@@ -205,7 +221,8 @@
             downLoadImage: '',
             showDialog: false,
             poster: null,
-            posterData: null
+            posterData: null,
+            isLogin: false
 
         };
         components = {
@@ -244,17 +261,11 @@
         onShow () {
             let pages = getCurrentPages();
             let {options} = pages.pop();
-            // wx.showModal({
-            //     title: "警告2",
-            //     content: JSON.stringify(options),
-            //     success: function() {
-            //     }
-            // });
+            this.getLoginStatus();
             if(options.goodsId) {
                 this.goodsId = options.goodsId;
                 this.getGoodsDetail(options);
             } else if (options.scene) {
-                // console.log('has scene')
                 var scene = decodeURIComponent(options.scene);
                 // wx.showModal({
                 //     title: "警告1",
@@ -283,6 +294,12 @@
                     icon: 'none'
                 });
             }
+        }
+
+        getLoginStatus () {
+            const isLogin = wx.getStorageSync('token');
+            this.isLogin = !!isLogin;
+            this.$apply();
         }
 
         // 转发
@@ -403,6 +420,16 @@
             goCart () {
                 wepy.switchTab({
                     url: `/pages/cart`
+                });
+            },
+
+            // 去授权
+            goAuthorization () {
+                const pages = getCurrentPages();
+                const currentPage = pages[pages.length-1];
+                const url = currentPage.route;
+                wepy.navigateTo({
+                    url: `/pages/authorization?redirectUrl=${url}`
                 });
             },
 

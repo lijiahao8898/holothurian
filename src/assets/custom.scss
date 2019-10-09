@@ -16,6 +16,21 @@ page {
     margin-top: 50px;
 }
 
+.m {
+    &-b {
+        &-xs {
+            margin-bottom: 5px;
+        }
+    }
+}
+
 .btn-primary {
     background: $primary-color !important;
+}
+
+.btn {
+    display: inline-block;
+    color: #fff;
+    padding: 10rpx 20rpx;
+    border-radius: 8rpx;
 }

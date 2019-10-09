@@ -1,6 +1,6 @@
 {
   "name": "holothurian",
-  "version": "0.0.2",
+  "version": "1.0.5",
   "description": "长岛县优质海参，来自北纬39°，国家品牌注册商标产品。",
   "main": "dist/app.js",
   "scripts": {

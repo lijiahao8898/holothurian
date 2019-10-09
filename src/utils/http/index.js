@@ -17,7 +17,10 @@ class HTTP {
                     const code = res.statusCode;
                     switch (code) {
                         case 401:
-                            wepy.navigateTo({url: `/pages/authorization?redirectUrl=`});
+                            // 当前为登录
+                            // wepy.navigateTo({url: `/pages/authorization?redirectUrl=`});
+                            break;
+                        case 405:
                             break;
                         case 500:
                             wepy.showToast({

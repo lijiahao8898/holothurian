@@ -101,19 +101,18 @@
         };
 
         onLoad (options) {
-
         }
 
         onShow () {
-            const userInfo = wepy.getStorageSync('userInfo');
-            if (!userInfo) {
-                // 没有登录授权
-                wepy.navigateTo({url: `/pages/authorization?redirectUrl=`});
-            } else {
+            // const userInfo = wepy.getStorageSync('userInfo');
+            // if (!userInfo) {
+            //     // 没有登录授权
+            //     wepy.navigateTo({url: `/pages/authorization?redirectUrl=`});
+            // } else {
                 if(this.imgList.length <= 0) {
                     this.getIndexInformation();
                 }
-            }
+            // }
         }
 
         async onPullDownRefresh () {

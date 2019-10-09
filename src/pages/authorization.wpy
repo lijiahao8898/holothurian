@@ -55,7 +55,16 @@
                     key: 'token',
                     data: data.data,
                 });
-                wepy.switchTab({url: `/pages/index/index`});
+                // const pages = getCurrentPages();
+                // const currentPage = pages[pages.length-1];
+                // const options = currentPage.options;
+                // if(options.redirectUrl) {
+                //     wepy.switchTab({url: `/${options.redirectUrl}`});
+                // } else {
+                    wepy.navigateBack({
+                        delta: 1
+                    })
+                // }
             }
         }
 

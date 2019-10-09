@@ -103,8 +103,8 @@
         }
 
         onLaunch () {
-            console.log(wepy);
-            console.log(wepy.getUpdateManager);
+            // console.log(wepy);
+            // console.log(wepy.getUpdateManager);
             // this.getUserSystemInfo();
             this.getAndDownloadNewVersion();
         }

@@ -1,16 +1,21 @@
 <template>
     <view class="mine">
-        <view class="user">
+        <view class="user" wx:if="{{isLogin}}">
             <view class="avatar">
                 <image class="avatar-image" src="{{userInfo.avatarUrl}}" alt="{{userInfo.nickName}}"></image>
             </view>
             <view class="nick-name">{{userInfo.nickName}}</view>
         </view>
+
+        <view class="user" @tap="goAuthorization" wx:else>
+            <view class="avatar">
+                <view class="avatar-image no-image"></view>
+            </view>
+            <view class="nick-name">立即登录</view>
+        </view>
+
         <view class="order mine-item">
             <view>我的订单</view>
-<!--            <view class="mine-icon">-->
-<!--                <van-icon name="arrow-down"/>-->
-<!--            </view>-->
         </view>
         <view class="order-detail">
             <view class="order-detail__item" @tap="goOrderList(0)">
@@ -65,20 +70,27 @@
 
         data = {
             userInfo: {},           // 小程序获取的
-            userData: {}            // 接口获取的
+            userData: {},           // 接口获取的
+            isLogin: false
         };
 
-        onLoad () {
-           this.$parent.getUserInfo((userInfo) => {
-               if (userInfo) {
-                   this.userInfo = userInfo;
-               }
-               this.$apply();
-           });
+        onShow () {
+            this.getLoginStatus();
+            if(this.isLogin) {
+                this.$parent.getUserInfo((userInfo) => {
+                    if (userInfo) {
+                        this.userInfo = userInfo;
+                    }
+                    this.$apply();
+                });
+                this.getUserData();
+            }
         }
 
-        onShow () {
-            this.getUserData();
+        getLoginStatus () {
+            const isLogin = wx.getStorageSync('token');
+            this.isLogin = !!isLogin;
+            this.$apply();
         }
 
         async onPullDownRefresh () {
@@ -105,7 +117,16 @@
                 wepy.navigateTo({
                     url: `/pages/orderLists?type=${type}`
                 });
-            }
+            },
+            // 去授权
+            goAuthorization () {
+                const pages = getCurrentPages();
+                const currentPage = pages[pages.length-1];
+                const url = currentPage.route;
+                wepy.navigateTo({
+                    url: `/pages/authorization?redirectUrl=${url}`
+                });
+            },
         }
     }
 </script>
@@ -191,5 +212,9 @@
         font-size: 40rpx;
         color: $font-color-dark;
         margin-bottom: 10rpx;
+    }
+
+    .no-image {
+        background: #fff;
     }
 </style>

@@ -48,8 +48,12 @@
 
             </view>
             <view wx:else class="cart-wrapper">
-                <view class="no-item">
+                <view class="no-item" wx:if="{{isLogin}}">
                     您的购物车空空如也~
+                </view>
+                <view class="no-item" wx:else>
+                    <view class="m-b-xs">您当前还未登录~</view>
+                    <view class="btn btn-primary" @tap="goAuthorization">立即登录</view>
                 </view>
             </view>
         </view>
@@ -83,7 +87,8 @@
         data = {
             cartNumber: 0,
             cartList: [],
-            checkBoxAll: false
+            checkBoxAll: false,
+            isLogin: false,
         };
 
         computed = {
@@ -109,11 +114,22 @@
         };
 
         onShow () {
-            this.getCartList();
+            this.getLoginStatus();
+            if(this.isLogin) {
+                this.getCartList();
+            }
+        }
+
+        getLoginStatus () {
+            const isLogin = wx.getStorageSync('token');
+            this.isLogin = !!isLogin;
+            this.$apply();
         }
 
         async onPullDownRefresh () {
-            await this.getCartList();
+            if(this.isLogin) {
+                await this.getCartList();
+            }
             wepy.stopPullDownRefresh()
         }
 
@@ -176,6 +192,16 @@
             goGoodsDetail (id) {
                 wepy.navigateTo({
                     url: `/pages/goodsDetail?goodsId=${id}`
+                });
+            },
+
+            // 去授权
+            goAuthorization () {
+                const pages = getCurrentPages();
+                const currentPage = pages[pages.length-1];
+                const url = currentPage.route;
+                wepy.navigateTo({
+                    url: `/pages/authorization?redirectUrl=${url}`
                 });
             },
 

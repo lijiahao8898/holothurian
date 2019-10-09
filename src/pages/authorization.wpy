@@ -71,15 +71,15 @@
         // 获取用户信息
         methods = {
             onGetUserInfo (e) {
-                const {userInfo} = e.detail;
-                this.$parent.globalData.userInfo = userInfo;
-
-                wepy.setStorage({
-                    key: 'userInfo',
-                    data: userInfo,
-                });
-
-                this.getUserAuthorization(userInfo);
+                const {userInfo, errMsg} = e.detail;
+                if(errMsg === 'getUserInfo:ok') {
+                    this.$parent.globalData.userInfo = userInfo;
+                    wepy.setStorage({
+                        key: 'userInfo',
+                        data: userInfo,
+                    });
+                    this.getUserAuthorization(userInfo);
+                }
             },
         };
 

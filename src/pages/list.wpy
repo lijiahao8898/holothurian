@@ -43,9 +43,11 @@
         }
 
         async getGoodsList () {
-            wepy.showLoading({
-                title: '拼命加载中...',
-            });
+            if(this.pager.pageNum > 1) {
+                wepy.showLoading({
+                    title: '拼命加载中...',
+                });
+            }
             const data = await api.getGoodsList({
                 ...this.pager
             });

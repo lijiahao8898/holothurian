@@ -121,9 +121,6 @@
         }
 
         async getIndexInformation () {
-            wepy.showLoading({
-                title: '拼命加载中...',
-            });
             const data = await api.getIndexInformation();
             if(data.code === 200) {
                 this.brandList = [...data.data.categoryDTOList];
@@ -134,7 +131,6 @@
                 console.log(this.imgListBottom);
                 this.$apply();
             }
-            wepy.hideLoading();
         }
 
         methods = {

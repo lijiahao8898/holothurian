@@ -135,18 +135,12 @@
 
         // 获取购物车列表
         async getCartList () {
-            wepy.showLoading({
-                title: '拼命加载中...',
-            });
             const data = await api.getCartList();
             if (data.code === 200) {
                 this.cartList = [...data.data];
                 this.cartNumber = this.cartList.length;
                 this.$apply();
             }
-            wepy.hideLoading({
-                title: '拼命加载中...',
-            });
         }
 
         // 删除购物车商品

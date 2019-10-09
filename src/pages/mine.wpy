@@ -151,15 +151,16 @@
 
     .user{
         margin: 5px;
-        padding: 10px;
+        padding: 10px 5px;
         background-color: $primary-color;
         border-radius: 10px 10px 0 0;
         .avatar{
-            width: 120rpx;
-            height: 120rpx;
+            width: 180rpx;
+            height: 180rpx;
             border-radius: 100%;
+            border: 6rpx dashed #744fcc;
             display: inline-block;
-            margin-right: 40rpx;
+            margin-right: 30rpx;
             &-image {
                 width: inherit;
                 height: inherit;
@@ -169,10 +170,10 @@
         .nick-name{
             display: inline-block;
             color: $white;
-            font-size: 24rpx;
+            font-size: 32rpx;
             vertical-align: top;
-            margin-top: 40rpx;
-            max-width: 280rpx;
+            margin-top: 18rpx;
+            max-width: 320rpx;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;

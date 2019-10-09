@@ -320,9 +320,6 @@
 
         async getGoodsDetail (options) {
             console.log(options);
-            wepy.showLoading({
-                title: '拼命加载中...',
-            });
             const data = await api.getGoodsDetail({
                 ...options
             });
@@ -333,7 +330,6 @@
                 this.currentSku = rows.itemSkuDTOList[0];
                 this.$apply();
             }
-            wepy.hideLoading();
         }
 
         // 加入购物车

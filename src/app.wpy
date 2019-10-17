@@ -130,7 +130,16 @@
                         }
                     }
                 });
-            })
+            });
+
+            updateManager.onUpdateFailed(() => {
+                // 新版本下载失败
+                wepy.showModal({
+                    title: '更新提示',
+                    content: '新版本已经上线，请手动删除小程序重新添加',
+                    showCancel: false,
+                })
+            });
         }
 
         // 获取用户信息
